@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DentalClinic_API", "DentalClinic_API\DentalClinic_API.csproj", "{FE5DE8F5-DDD6-4628-A14E-E31799485B09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DentalClinic_API", "DentalClinic_API\DentalClinic_API.csproj", "{FE5DE8F5-DDD6-4628-A14E-E31799485B09}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{16E0E351-F1E8-4C75-8BAA-434EA417057C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories", "Repositories\Repositories.csproj", "{4F6FED0E-39BC-45C4-AD30-02F3C227C139}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{F6363822-9025-4074-B4E7-EA8297AE719F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{FE5DE8F5-DDD6-4628-A14E-E31799485B09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE5DE8F5-DDD6-4628-A14E-E31799485B09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE5DE8F5-DDD6-4628-A14E-E31799485B09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16E0E351-F1E8-4C75-8BAA-434EA417057C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16E0E351-F1E8-4C75-8BAA-434EA417057C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16E0E351-F1E8-4C75-8BAA-434EA417057C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16E0E351-F1E8-4C75-8BAA-434EA417057C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F6FED0E-39BC-45C4-AD30-02F3C227C139}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F6FED0E-39BC-45C4-AD30-02F3C227C139}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F6FED0E-39BC-45C4-AD30-02F3C227C139}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F6FED0E-39BC-45C4-AD30-02F3C227C139}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6363822-9025-4074-B4E7-EA8297AE719F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6363822-9025-4074-B4E7-EA8297AE719F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6363822-9025-4074-B4E7-EA8297AE719F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6363822-9025-4074-B4E7-EA8297AE719F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

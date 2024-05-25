@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Models;
+using Services.Interface;
 
 namespace DentalClinic_API.Controllers
 {
@@ -12,10 +14,12 @@ namespace DentalClinic_API.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private IPatientService _patientService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IPatientService patientService)
         {
             _logger = logger;
+            _patientService = patientService;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
@@ -28,6 +32,12 @@ namespace DentalClinic_API.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpGet(Name = "GetPatients")]
+        public async Task<List<Patient>> GetPatients()
+        {
+            return await _patientService.GetAllPatient();
         }
     }
 }

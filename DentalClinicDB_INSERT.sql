@@ -1,23 +1,25 @@
+use DentalClinicDB
 --Patient Table
 INSERT INTO [dbo].[patient] (patientID, name, age, address, gender, email, password)
 VALUES 
-(1, 'Nguyen', 30, '123 Duong Chinh', 1, 'nguyen@gmail.com', '123'),
-(2, 'Tran', 25, '456 Duong Huynh Van Banh', 2, 'tran@gmail.com', '456'),
-(3, 'Le', 35, '789 Duong Le Van Sy', 2, 'le@gmail.com', '789'),
-(4, 'Pham', 28, '321 Duong Nguyen Thi Minh Khai', 1, 'pham@gmail.com', '1011'),
-(5, 'Hoang', 40, '654 Duong Thu Duc', 2, 'hoang@gmail.com', '1213');
+(1, 'Default', 20, '123 Street', 1, 'default@gmail.com', '123'),
+(2, 'Nguyen', 30, '123 Duong Chinh', 1, 'nguyen@gmail.com', '123'),
+(3, 'Tran', 25, '456 Duong Huynh Van Banh', 2, 'tran@gmail.com', '456'),
+(4, 'Le', 35, '789 Duong Le Van Sy', 2, 'le@gmail.com', '789'),
+(5, 'Pham', 28, '321 Duong Nguyen Thi Minh Khai', 1, 'pham@gmail.com', '1011'),
+(6, 'Hoang', 40, '654 Duong Thu Duc', 2, 'hoang@gmail.com', '1213');
 
 -- Dentist table
-INSERT INTO [dbo].[dentist] (dentistID, name, type, contractType, status)
+INSERT INTO [dbo].[dentist] (dentistID, name, email, password, type, contractType, status)
 VALUES 
-(1, 'Bac si Nguyen', 1, 'Full-time', 1),
-(2, 'Bac si Tran', 2, 'Part-time', 1),
-(3, 'Bac si Le', 1, 'Full-time', 1),
-(4, 'Bac si Pham', 2, 'Full-time', 0),
-(5, 'Bac si Hoang', 1, 'Full-time', 0);
+(1, 'Bac si Nguyen','abc@gmail.com','123', 1, 'Full-time', 1),
+(2, 'Bac si Tran', '123@gmail.com', '123', 2, 'Part-time', 1),
+(3, 'Bac si Le', '234@gmail.com', '123', 1, 'Full-time', 1),
+(4, 'Bac si Pham', '321@gmail.com', '123',  2, 'Full-time', 0),
+(5, 'Bac si Hoang', '213@gmail.com', '123',  1, 'Full-time', 0);
 
 --  Service table
-INSERT INTO [dbo].[service] (serviceID, name, price, description)
+INSERT INTO [dbo].[medicalService] (medicalServiceID, name, price, description)
 VALUES 
 (1, 'Ve sinh rang', 100000, 'Ve sinh rang co ban'),
 (2, 'Tram rang', 200000, 'Tram rang'),
@@ -44,7 +46,7 @@ VALUES
 (5, '2024-05-26', 'Emergency', 1, 1, 5);
 
 -- AppointmentDetails table
-INSERT INTO [dbo].[appointmentDetails] (appointmentDetailID, appointmentID, serviceID, dentistID, scheduleID)
+INSERT INTO [dbo].[appointmentDetails] (appointmentDetailID, appointmentID, medicalServiceID, dentistID, scheduleID)
 VALUES 
 (1, 1, 1, 1, 1),
 (2, 2, 2, 2, 2),
@@ -53,7 +55,7 @@ VALUES
 (5, 5, 5, 5, 5);
 
 -- DentistService table
-INSERT INTO [dbo].[dentistService] (dentistServiceID, dentistID, serviceID)
+INSERT INTO [dbo].[dentistMedicalService] (dentistMedicalServiceID, dentistID, medicalServiceID)
 VALUES 
 (1, 1, 1),
 (2, 2, 2),
@@ -78,3 +80,5 @@ VALUES
 (3, 300000, '11:00:00', 3),
 (4, 400000, '12:00:00', 4),
 (5, 500000, '13:00:00', 5);
+
+use master
