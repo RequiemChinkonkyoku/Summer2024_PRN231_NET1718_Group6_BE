@@ -1,4 +1,5 @@
 ﻿using Models;
+using Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,7 @@ namespace Services.Interface
         Task<Dentist> DentistLogin(string email, string password);
         Task<List<Dentist>> GetAllDentistAsync();
         Task<Dentist> GetDentistByID(int id);
+        Task<Dentist> DentistAdd(AddDentistRequest addDentistRequest);
+
     }
 }

@@ -58,5 +58,24 @@ namespace DentalClinic_API.Controllers
                 return Unauthorized();
             }
         }
+
+        [HttpPost("add", Name = "AddDentist")]
+        public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
+        {
+            if (addDentistRequest == null)
+            {
+                return BadRequest();
+            }
+
+            var dentist = await _dentistService.DentistAdd(addDentistRequest);
+            if (dentist != null)
+            {
+                return Ok(dentist);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }

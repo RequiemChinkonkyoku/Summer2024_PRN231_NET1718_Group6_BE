@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Models;
+using Models.DTOs;
 using Repositories.Implement;
 using Repositories.Interface;
 using Services.Interface;
@@ -70,5 +71,38 @@ namespace Services.Implement
                 return null;
             }
         }
+
+        public async Task<Dentist> DentistAdd(AddDentistRequest addDentistRequest)
+        {
+            var dentist = new Dentist()
+            {
+                Name = addDentistRequest.Name,
+                Email = addDentistRequest.Email,
+                Password = addDentistRequest.Password,
+                Type = addDentistRequest.Type,
+                ContractType = addDentistRequest.ContractType,
+            };
+            await _dentistRepo.AddAsync(dentist);
+            return dentist;
+        }
+
+        //public async Task<Dentist> UpdateDentist(UpdateDentistRequest updateDentistRequest)
+        //{
+        //    var dentist = await _dentistRepo.FindByIdAsync(updateDentistRequest.DentistId);
+        //    if (dentist == null)
+        //    {
+        //        return null; // Dentist not found
+        //    }
+
+        //    dentist.Name = updateDentistRequest.Name;
+        //    dentist.Email = updateDentistRequest.Email;
+        //    dentist.Password = updateDentistRequest.Password;
+        //    dentist.Type = updateDentistRequest.Type;
+        //    dentist.ContractType = updateDentistRequest.ContractType;
+        //    dentist.Status = updateDentistRequest.Status;
+
+        //    await _dentistRepo.UpdateAsync(dentist);
+        //    return dentist;
+        //}
     }
 }

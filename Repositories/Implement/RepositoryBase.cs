@@ -32,16 +32,33 @@ namespace Repositories.Implement
             context.SaveChanges();
         }
 
+        public async Task AddAsync(T item)
+        {
+            await dbSet.AddAsync(item);
+            await context.SaveChangesAsync();
+        }
+
         public void Delete(T item)
         {
             dbSet.Remove(item);
             context.SaveChanges();
+        }
+        public async Task DeleteAsync(T item)
+        {
+           dbSet.Remove(item);
+           await context.SaveChangesAsync();
         }
 
         public void Update(T item)
         {
             dbSet.Update(item);
             context.SaveChanges();
+        }
+
+        public async Task UpdateAsync(T item)
+        {
+            dbSet.Update(item);
+            await context.SaveChangesAsync();
         }
 
         public async Task<T> FindByIdAsync(T id)
