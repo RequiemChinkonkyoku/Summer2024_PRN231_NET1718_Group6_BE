@@ -1,6 +1,8 @@
 using Models;
 using Repositories.Implement;
 using Repositories.Interface;
+using Services.Implement;
+using Services.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,9 @@ builder.Services.AddScoped<IRepositoryBase<Patient>, PatientRepository>();
 builder.Services.AddScoped<IRepositoryBase<Schedule>, ScheduleRepository>();
 builder.Services.AddScoped<IRepositoryBase<MedicalService>, MedicalServiceRepository>();
 builder.Services.AddScoped<IRepositoryBase<Models.Transaction>, TransactionRepository>();
+
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IDentistService, DentistService>();
 
 var app = builder.Build();
 

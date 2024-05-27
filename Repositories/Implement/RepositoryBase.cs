@@ -44,7 +44,7 @@ namespace Repositories.Implement
             context.SaveChanges();
         }
 
-        public async Task<T> FindById(T id)
+        public async Task<T> FindByIdAsync(T id)
         {
             return await dbSet.FindAsync(id);
         }

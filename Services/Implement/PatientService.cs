@@ -1,5 +1,7 @@
-﻿using Models;
+﻿using Microsoft.IdentityModel.Tokens;
+using Models;
 using Repositories.Implement;
+using Repositories.Interface;
 using Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -9,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace Services.Implement
 {
-    public class PatientService : Interface.IPatientService
+    public class PatientService : IPatientService
     {
-        private PatientRepository _patientRepo;
+        private IRepositoryBase<Patient> _patientRepo;
 
-        public PatientService(PatientRepository patientRepository)
+        public PatientService(IRepositoryBase<Patient> patientRepository)
         {
             _patientRepo = patientRepository;
         }
@@ -21,6 +23,53 @@ namespace Services.Implement
         public async Task<List<Patient>> GetAllPatient()
         {
             return await _patientRepo.GetAllAsync();
+        }
+
+        public async Task<Patient> GetPatientByID(int id)
+        {
+            var patients = await _patientRepo.GetAllAsync();
+
+            if (!patients.IsNullOrEmpty())
+            {
+                var patient = patients.FirstOrDefault(p => p.PatientId == id);
+
+                if (patient != null)
+                {
+                    return patient;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<Patient> PatientLogin(string email, string password)
+        {
+            var patients = await _patientRepo.GetAllAsync();
+
+            if (!patients.IsNullOrEmpty())
+            {
+                var patient = patients.FirstOrDefault(p => p.Email.Equals(email) &&
+                                                           p.Password.Equals(password));
+
+                if (patient != null)
+                {
+                    return patient;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

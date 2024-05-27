@@ -16,7 +16,7 @@ namespace Repositories.Interface
 
         void Delete(T item);
 
-        Task<T> FindById(T id);
+        Task<T> FindByIdAsync(T id);
 
     }
 }
