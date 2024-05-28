@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using Models;
 using Repositories.Implement;
 using Repositories.Interface;
@@ -26,6 +27,16 @@ builder.Services.AddScoped<IRepositoryBase<Models.Transaction>, TransactionRepos
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IDentistService, DentistService>();
 
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(5);
+    options.Cookie.IsEssential = true;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.Name = ".CCP.Session";
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,6 +47,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseSession();
 
 app.UseAuthorization();
 
