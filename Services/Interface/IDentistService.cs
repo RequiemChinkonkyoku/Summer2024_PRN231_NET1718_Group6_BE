@@ -14,6 +14,7 @@ namespace Services.Interface
         Task<List<Dentist>> GetAllDentistAsync();
         Task<Dentist> GetDentistByID(int id);
         Task<Dentist> DentistAdd(AddDentistRequest addDentistRequest);
-
+        Task<Dentist> UpdateDentist(int id,UpdateDentistRequest updateDentistRequest);
+        Task<Dentist> DeleteDentist(int id);
     }
 }

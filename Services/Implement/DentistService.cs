@@ -86,23 +86,40 @@ namespace Services.Implement
             return dentist;
         }
 
-        //public async Task<Dentist> UpdateDentist(UpdateDentistRequest updateDentistRequest)
-        //{
-        //    var dentist = await _dentistRepo.FindByIdAsync(updateDentistRequest.DentistId);
-        //    if (dentist == null)
-        //    {
-        //        return null; // Dentist not found
-        //    }
+        public async Task<Dentist> UpdateDentist(int id, UpdateDentistRequest updateDentistRequest)
+        {
+            var dentist = await _dentistRepo.GetAllAsync();
+            var updatedentist = dentist.FirstOrDefault(d => d.DentistId == id);
 
-        //    dentist.Name = updateDentistRequest.Name;
-        //    dentist.Email = updateDentistRequest.Email;
-        //    dentist.Password = updateDentistRequest.Password;
-        //    dentist.Type = updateDentistRequest.Type;
-        //    dentist.ContractType = updateDentistRequest.ContractType;
-        //    dentist.Status = updateDentistRequest.Status;
+            if (dentist == null)
+            {
+                return null; 
+            }
 
-        //    await _dentistRepo.UpdateAsync(dentist);
-        //    return dentist;
-        //}
+            updatedentist.Name = updateDentistRequest.Name;
+            updatedentist.Email = updateDentistRequest.Email;
+            updatedentist.Password = updateDentistRequest.Password;
+            updatedentist.Type = updateDentistRequest.Type;
+            updatedentist.ContractType = updateDentistRequest.ContractType;
+            updatedentist.Status = updateDentistRequest.Status;
+
+            await _dentistRepo.UpdateAsync(updatedentist);
+            return updatedentist;
+        }
+
+        public async Task<Dentist> DeleteDentist(int id)
+        {
+            var dentist = await _dentistRepo.GetAllAsync();
+            var deletedentist = dentist.FirstOrDefault(d => d.DentistId == id);
+            if (dentist == null)
+            {
+                return null; 
+            }
+
+            deletedentist.Status = 0;
+            await _dentistRepo.UpdateAsync(deletedentist);
+            return deletedentist;
+        }
+
     }
 }

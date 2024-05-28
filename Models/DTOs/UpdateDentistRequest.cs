@@ -8,8 +8,6 @@ namespace Models.DTOs
 {
     public class UpdateDentistRequest
     {
-        public int DentistId { get; set; }
-
         public string? Name { get; set; }
 
         public string? Email { get; set; }
