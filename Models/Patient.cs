@@ -15,9 +15,9 @@ public partial class Patient
 
     public int? Gender { get; set; }
 
-    public string? Email { get; set; }
+    public int? AccountId { get; set; }
 
-    public string? Password { get; set; }
+    public virtual Account? Account { get; set; }
 
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 

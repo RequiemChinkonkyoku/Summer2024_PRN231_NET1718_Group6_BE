@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Repositories.Implement
 {
-    public class DentistServiceRepository : RepositoryBase<DentistMedicalService>
+    public class ProfessionRepository : RepositoryBase<Profession>
     {
     }
 }

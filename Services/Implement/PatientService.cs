@@ -47,29 +47,5 @@ namespace Services.Implement
                 return null;
             }
         }
-
-        public async Task<Patient> PatientLogin(string email, string password)
-        {
-            var patients = await _patientRepo.GetAllAsync();
-
-            if (!patients.IsNullOrEmpty())
-            {
-                var patient = patients.FirstOrDefault(p => p.Email.Equals(email) &&
-                                                           p.Password.Equals(password));
-
-                if (patient != null)
-                {
-                    return patient;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
     }
 }

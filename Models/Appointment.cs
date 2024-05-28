@@ -7,15 +7,25 @@ public partial class Appointment
 {
     public int AppointmentId { get; set; }
 
+    public DateTime? CreateDate { get; set; }
+
     public DateTime? ArrivalDate { get; set; }
-
-    public string? Type { get; set; }
-
-    public int? Status { get; set; }
 
     public int? TimeSlot { get; set; }
 
+    public int? Status { get; set; }
+
+    public int? BookingPrice { get; set; }
+
+    public int? ServicePrice { get; set; }
+
+    public int? TotalPrice { get; set; }
+
+    public int? AccountId { get; set; }
+
     public int? PatientId { get; set; }
+
+    public virtual Account? Account { get; set; }
 
     public virtual ICollection<AppointmentDetail> AppointmentDetails { get; set; } = new List<AppointmentDetail>();
 

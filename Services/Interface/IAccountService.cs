@@ -5,9 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repositories.Implement
+namespace Services.Interface
 {
-    public class MedicalServiceRepository : RepositoryBase<MedicalService>
+    public interface IAccountService
     {
+        Task<Account> AccountLogin(string email, string password);
     }
 }

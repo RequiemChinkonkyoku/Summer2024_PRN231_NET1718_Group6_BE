@@ -21,7 +21,7 @@ public partial class Dentist
 
     public virtual ICollection<AppointmentDetail> AppointmentDetails { get; set; } = new List<AppointmentDetail>();
 
-    public virtual ICollection<DentistMedicalService> DentistMedicalServices { get; set; } = new List<DentistMedicalService>();
+    public virtual ICollection<Profession> Professions { get; set; } = new List<Profession>();
 
     public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 }

@@ -11,6 +11,5 @@ namespace Services.Interface
     {
         Task<List<Patient>> GetAllPatient();
         Task<Patient> GetPatientByID(int id);
-        Task<Patient> PatientLogin(string email, string password);
     }
 }
