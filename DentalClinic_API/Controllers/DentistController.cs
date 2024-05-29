@@ -77,5 +77,35 @@ namespace DentalClinic_API.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPut("{id}", Name = "UpdateDentist")]
+        public async Task<IActionResult> UpdateDentist(int id, [FromBody] UpdateDentistRequest updateDentistRequest)
+        {
+            if (updateDentistRequest == null)
+            {
+                return BadRequest();
+            }
+
+            var updatedDentist = await _dentistService.UpdateDentist(id, updateDentistRequest); 
+
+            if (updatedDentist == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedDentist);
+        }
+
+        [HttpDelete("{id}", Name = "DeleteDentist")]
+        public async Task<IActionResult> DeleteDentist(int id)
+        {
+            var deletedentist = await _dentistService.DeleteDentist(id);
+            if (deletedentist == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(deletedentist);
+        }
     }
 }
