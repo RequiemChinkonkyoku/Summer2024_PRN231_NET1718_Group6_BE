@@ -18,8 +18,8 @@ namespace DentalClinic_API.Controllers
             _accountService = accountService;
         }
 
-        [HttpPost("login", Name = "AccountLogin")]
-        public async Task<ActionResult<Account>> PatientLogin([FromBody] LoginRequest loginRequest)
+        [HttpPost("account-login")]
+        public async Task<ActionResult<Account>> AccountLogin([FromBody] LoginRequest loginRequest)
         {
             if (loginRequest == null)
             {
@@ -30,7 +30,7 @@ namespace DentalClinic_API.Controllers
 
             if (account != null)
             {
-                HttpContext.Session.SetInt32("PatientID", account.AccountId);
+                HttpContext.Session.SetInt32("AccountID", account.AccountId);
                 return Ok(new { account, redirectUrl = "https://www.youtube.com/watch?v=v56H49q_elw&list=RDMM1iDk_rHA7FM&index=6" });
             }
             else
@@ -39,15 +39,15 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpGet("session", Name = "GetCurrentSession")]
+        [HttpGet("get-session")]
         public IActionResult GetSession()
         {
             var _session = HttpContext.Session;
-            var accountID = _session.GetInt32("PatientID");
+            var accountID = _session.GetInt32("AccountID");
 
             if (accountID != null)
             {
-                return Ok(new { AccountID = accountID});
+                return Ok(new { AccountID = accountID });
             }
             else
             {

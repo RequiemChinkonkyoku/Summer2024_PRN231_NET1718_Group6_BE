@@ -93,7 +93,7 @@ namespace Services.Implement
 
             if (dentist == null)
             {
-                return null; 
+                return null;
             }
 
             updatedentist.Name = updateDentistRequest.Name;
@@ -113,7 +113,7 @@ namespace Services.Implement
             var deletedentist = dentist.FirstOrDefault(d => d.DentistId == id);
             if (dentist == null)
             {
-                return null; 
+                return null;
             }
 
             deletedentist.Status = 0;

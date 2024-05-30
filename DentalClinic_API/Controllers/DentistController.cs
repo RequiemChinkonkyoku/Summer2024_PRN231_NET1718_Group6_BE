@@ -17,14 +17,14 @@ namespace DentalClinic_API.Controllers
             _dentistService = dentistService;
         }
 
-        [HttpGet(Name = "GetDentists")]
+        [HttpGet("get-all-dentists")]
         public async Task<ActionResult<List<Dentist>>> GetAllDentist()
         {
             var patients = await _dentistService.GetAllDentistAsync();
             return Ok(patients);
         }
 
-        [HttpGet("{id}", Name = "GetDentistWithID")]
+        [HttpGet("get-dentist-by-id/{id}")]
         public async Task<ActionResult<Dentist>> GetDentistById(int id)
         {
             var dentist = await _dentistService.GetDentistByID(id);
@@ -39,7 +39,7 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpPost("login", Name = "DentistLogin")]
+        [HttpPost("dentist-login")]
         public async Task<ActionResult<Dentist>> PatientLogin([FromBody] LoginRequest loginRequest)
         {
             if (loginRequest == null)
@@ -59,7 +59,7 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpPost("addDentist", Name = "AddDentist")]
+        [HttpPost("add-dentist")]
         public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
         {
             if (addDentistRequest == null)
@@ -78,7 +78,7 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpPut("updateDentist/{id}", Name = "UpdateDentist")]
+        [HttpPut("update-dentist/{id}")]
         public async Task<IActionResult> UpdateDentist(int id, [FromBody] UpdateDentistRequest updateDentistRequest)
         {
             if (updateDentistRequest == null)
@@ -96,7 +96,7 @@ namespace DentalClinic_API.Controllers
             return Ok(updatedDentist);
         }
 
-        [HttpDelete("deleteDentist/{id}", Name = "DeleteDentist")]
+        [HttpDelete("delete-dentist/{id}")]
         public async Task<IActionResult> DeleteDentist(int id)
         {
             var deletedentist = await _dentistService.DeleteDentist(id);

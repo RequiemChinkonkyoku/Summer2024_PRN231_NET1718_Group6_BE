@@ -17,14 +17,14 @@ namespace DentalClinic_API.Controllers
             _patientService = patientService;
         }
 
-        [HttpGet(Name = "GetPatient")]
-        public async Task<ActionResult<List<Patient>>> GetPatients()
+        [HttpGet("get-all-patients")]
+        public async Task<ActionResult<List<Patient>>> GetAllPatients()
         {
             var patients = await _patientService.GetAllPatient();
             return Ok(patients);
         }
 
-        [HttpGet("{id}", Name = "GetPatientWithID")]
+        [HttpGet("get-patient-by-id/{id}")]
         public async Task<ActionResult<Patient>> GetPatientById(int id)
         {
             var patient = await _patientService.GetPatientByID(id);
@@ -39,7 +39,7 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpPost("addPatient", Name = "AddPatient")]
+        [HttpPost("add-patient")]
         public async Task<IActionResult> AddPatient([FromBody] AddPatientRequest addPatientRequest)
         {
             
@@ -60,7 +60,7 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpPut("updatePatient/{patientId}", Name = "UpdatePatient")]
+        [HttpPut("update-patient/{id}")]
         public async Task<IActionResult> UpdatePatient(int patientId, [FromBody] UpdatePatientRequest updatePatientRequest)
         {
             try
