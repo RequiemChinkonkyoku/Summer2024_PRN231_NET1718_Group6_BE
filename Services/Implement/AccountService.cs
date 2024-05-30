@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Models;
@@ -27,8 +28,7 @@ namespace Services.Implement
         public async Task<string> AccountLogin(string email, string password)
         {
             // Validate user credentials
-            // In a real application, this would be a database lookup
-            if (email == "user@example.com" && password == "password")
+            if (!(AccountValidate(email, password) == null))
             {
                 // Generate JWT token
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -55,6 +55,21 @@ namespace Services.Implement
             }
 
             // If credentials are invalid
+            return null;
+        }
+
+        private async Task<Account> AccountValidate(string email, string password)
+        {
+            var accounts = await _accountRepo.GetAllAsync();
+            if (!accounts.IsNullOrEmpty())
+            {
+                var account = accounts.FirstOrDefault(x => x.Email.Equals(email)
+                                                      && x.Password.Equals(password));
+                if (!(account == null))
+                {
+                    return account;
+                }
+            }
             return null;
         }
 
