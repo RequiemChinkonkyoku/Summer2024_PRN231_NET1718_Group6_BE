@@ -1,4 +1,5 @@
 ﻿using Models;
+using Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,8 @@ namespace Services.Interface
     {
         Task<List<Patient>> GetAllPatient();
         Task<Patient> GetPatientByID(int id);
+        Task<Patient> AddPatientAsync(AddPatientRequest addPatientRequest, int accountId);
+        Task<Patient> UpdatePatientAsync(int patientId, UpdatePatientRequest updatePatientRequest, int accountId);
+
     }
 }

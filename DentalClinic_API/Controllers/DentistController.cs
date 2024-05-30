@@ -59,7 +59,7 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpPost("add", Name = "AddDentist")]
+        [HttpPost("addDentist", Name = "AddDentist")]
         public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
         {
             if (addDentistRequest == null)
@@ -78,7 +78,7 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpPut("{id}", Name = "UpdateDentist")]
+        [HttpPut("updateDentist/{id}", Name = "UpdateDentist")]
         public async Task<IActionResult> UpdateDentist(int id, [FromBody] UpdateDentistRequest updateDentistRequest)
         {
             if (updateDentistRequest == null)
@@ -96,7 +96,7 @@ namespace DentalClinic_API.Controllers
             return Ok(updatedDentist);
         }
 
-        [HttpDelete("{id}", Name = "DeleteDentist")]
+        [HttpDelete("deleteDentist/{id}", Name = "DeleteDentist")]
         public async Task<IActionResult> DeleteDentist(int id)
         {
             var deletedentist = await _dentistService.DeleteDentist(id);
