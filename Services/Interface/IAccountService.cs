@@ -9,6 +9,8 @@ namespace Services.Interface
 {
     public interface IAccountService
     {
-        Task<Account> AccountLogin(string email, string password);
+        Task<string> AccountLogin(string email, string password);
+
+        Task<List<Account>> GetAllAccountsAsync();
     }
 }
