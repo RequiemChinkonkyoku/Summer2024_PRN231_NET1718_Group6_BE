@@ -7,6 +7,8 @@ using Services.Interface;
 
 namespace DentalClinic_API.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
@@ -15,12 +17,6 @@ namespace DentalClinic_API.Controllers
         {
             _accountService = accountService;
         }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
 
         [HttpPost("login", Name = "AccountLogin")]
         public async Task<ActionResult<Account>> PatientLogin([FromBody] LoginRequest loginRequest)
