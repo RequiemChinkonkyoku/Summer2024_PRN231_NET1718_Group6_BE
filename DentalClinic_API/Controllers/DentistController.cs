@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.DTOs;
 using Services.Implement;
@@ -18,6 +19,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpGet("get-all-dentists")]
+        [Authorize(Roles = "Dentist")]
         public async Task<ActionResult<List<Dentist>>> GetAllDentist()
         {
             var patients = await _dentistService.GetAllDentistAsync();
@@ -40,23 +42,16 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpPost("dentist-login")]
-        public async Task<ActionResult<Dentist>> PatientLogin([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> DentistLogin([FromBody] LoginRequest loginRequest)
         {
-            if (loginRequest == null)
+            var token = await _dentistService.DentistLogin(loginRequest.Email, loginRequest.Password);
+
+            if (token == null)
             {
-                return BadRequest("Invalid request");
+                return Unauthorized("Invalid credentials");
             }
 
-            var dentist = await _dentistService.DentistLogin(loginRequest.Email, loginRequest.Password);
-
-            if (dentist != null)
-            {
-                return Ok(dentist);
-            }
-            else
-            {
-                return Unauthorized();
-            }
+            return Ok(new { Token = token });
         }
 
         [HttpPost("add-dentist")]

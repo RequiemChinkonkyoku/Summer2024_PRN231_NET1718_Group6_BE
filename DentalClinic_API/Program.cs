@@ -54,7 +54,7 @@ builder.Services.AddSwaggerGen(c =>
 // Add CORS services and configure a named policy
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "MyCorsPolicy",
+    options.AddPolicy(name: "CorsPolicy",
                       policy =>
                       {
                           policy.AllowAnyOrigin()
@@ -84,7 +84,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AccountAuth",
+        policy => policy.RequireClaim(ClaimTypes.Role, "Account"));
+    options.AddPolicy("DentistAuth",
+        policy => policy.RequireClaim(ClaimTypes.Role, "Dentist"));
+});
 
 builder.Services.AddScoped<IRepositoryBase<Appointment>, AppointmentRepository>();
 builder.Services.AddScoped<IRepositoryBase<AppointmentDetail>, AppointmentDetailRepository>();

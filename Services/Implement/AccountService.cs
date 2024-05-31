@@ -43,9 +43,10 @@ namespace Services.Implement
                     Subject = new ClaimsIdentity(new[]
                     {
                     new Claim(ClaimTypes.NameIdentifier, email),
-                    new Claim(ClaimTypes.Email, email)
+                    new Claim(ClaimTypes.Email, email),
+                    new Claim(ClaimTypes.Role, "Account")
                 }),
-                    Expires = DateTime.UtcNow.AddHours(1),
+                    Expires = DateTime.UtcNow.AddMinutes(15),
                     Issuer = config["Jwt:Issuer"],
                     Audience = config["Jwt:Audience"],
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
