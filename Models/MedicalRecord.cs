@@ -11,6 +11,8 @@ public partial class MedicalRecord
 
     public string? Note { get; set; }
 
+    public int? Status { get; set; }
+
     public int? PatientId { get; set; }
 
     public int? AppointmentId { get; set; }

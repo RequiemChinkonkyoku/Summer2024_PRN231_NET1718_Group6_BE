@@ -16,11 +16,11 @@ public partial class DentalClinicDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Account> Accounts { get; set; }
-
     public virtual DbSet<Appointment> Appointments { get; set; }
 
     public virtual DbSet<AppointmentDetail> AppointmentDetails { get; set; }
+
+    public virtual DbSet<Customer> Customers { get; set; }
 
     public virtual DbSet<Dentist> Dentists { get; set; }
 
@@ -40,6 +40,7 @@ public partial class DentalClinicDbContext : DbContext
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer(GetConnectionString());
 
+
     private string GetConnectionString()
     {
         IConfiguration config = new ConfigurationBuilder()
@@ -51,35 +52,15 @@ public partial class DentalClinicDbContext : DbContext
         return strConn;
     }
 
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Account>(entity =>
-        {
-            entity.HasKey(e => e.AccountId).HasName("PK__account__F267253E09596A0F");
-
-            entity.ToTable("account");
-
-            entity.Property(e => e.AccountId).HasColumnName("accountID");
-            entity.Property(e => e.Email)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("email");
-            entity.Property(e => e.Password)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("password");
-            entity.Property(e => e.Status).HasColumnName("status");
-        });
-
         modelBuilder.Entity<Appointment>(entity =>
         {
-            entity.HasKey(e => e.AppointmentId).HasName("PK__appointm__D067651E2696897F");
+            entity.HasKey(e => e.AppointmentId).HasName("PK__appointm__D067651E6821671C");
 
             entity.ToTable("appointment");
 
             entity.Property(e => e.AppointmentId).HasColumnName("appointmentID");
-            entity.Property(e => e.AccountId).HasColumnName("accountID");
             entity.Property(e => e.ArrivalDate)
                 .HasColumnType("date")
                 .HasColumnName("arrivalDate");
@@ -87,15 +68,16 @@ public partial class DentalClinicDbContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasColumnType("date")
                 .HasColumnName("createDate");
+            entity.Property(e => e.CustomerId).HasColumnName("customerID");
             entity.Property(e => e.PatientId).HasColumnName("patientID");
             entity.Property(e => e.ServicePrice).HasColumnName("servicePrice");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.TimeSlot).HasColumnName("timeSlot");
             entity.Property(e => e.TotalPrice).HasColumnName("totalPrice");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Appointments)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK__appointme__accou__3C69FB99");
+            entity.HasOne(d => d.Customer).WithMany(p => p.Appointments)
+                .HasForeignKey(d => d.CustomerId)
+                .HasConstraintName("FK__appointme__custo__3C69FB99");
 
             entity.HasOne(d => d.Patient).WithMany(p => p.Appointments)
                 .HasForeignKey(d => d.PatientId)
@@ -104,7 +86,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<AppointmentDetail>(entity =>
         {
-            entity.HasKey(e => e.AppointmentDetailId).HasName("PK__appointm__B5CE973C21176952");
+            entity.HasKey(e => e.AppointmentDetailId).HasName("PK__appointm__B5CE973CA1B9E610");
 
             entity.ToTable("appointmentDetails");
 
@@ -131,9 +113,27 @@ public partial class DentalClinicDbContext : DbContext
                 .HasConstraintName("FK__appointme__treat__534D60F1");
         });
 
+        modelBuilder.Entity<Customer>(entity =>
+        {
+            entity.HasKey(e => e.CustomerId).HasName("PK__customer__B611CB9D93B974C7");
+
+            entity.ToTable("customer");
+
+            entity.Property(e => e.CustomerId).HasColumnName("customerID");
+            entity.Property(e => e.Email)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("email");
+            entity.Property(e => e.Password)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("password");
+            entity.Property(e => e.Status).HasColumnName("status");
+        });
+
         modelBuilder.Entity<Dentist>(entity =>
         {
-            entity.HasKey(e => e.DentistId).HasName("PK__dentist__38160498569D1AEB");
+            entity.HasKey(e => e.DentistId).HasName("PK__dentist__381604984669AA19");
 
             entity.ToTable("dentist");
 
@@ -142,17 +142,25 @@ public partial class DentalClinicDbContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("contractType");
+            entity.Property(e => e.Email)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("email");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("name");
+            entity.Property(e => e.Password)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("password");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.Type).HasColumnName("type");
         });
 
         modelBuilder.Entity<MedicalRecord>(entity =>
         {
-            entity.HasKey(e => e.RecordId).HasName("PK__medicalR__D825197EF8EA3AF9");
+            entity.HasKey(e => e.RecordId).HasName("PK__medicalR__D825197E7E12116B");
 
             entity.ToTable("medicalRecord");
 
@@ -167,6 +175,7 @@ public partial class DentalClinicDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("note");
             entity.Property(e => e.PatientId).HasColumnName("patientID");
+            entity.Property(e => e.Status).HasColumnName("status");
 
             entity.HasOne(d => d.Appointment).WithMany(p => p.MedicalRecords)
                 .HasForeignKey(d => d.AppointmentId)
@@ -179,31 +188,32 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Patient>(entity =>
         {
-            entity.HasKey(e => e.PatientId).HasName("PK__patient__A17005CCCD1709FE");
+            entity.HasKey(e => e.PatientId).HasName("PK__patient__A17005CC48B26DDA");
 
             entity.ToTable("patient");
 
             entity.Property(e => e.PatientId).HasColumnName("patientID");
-            entity.Property(e => e.AccountId).HasColumnName("accountID");
             entity.Property(e => e.Address)
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("address");
             entity.Property(e => e.Age).HasColumnName("age");
+            entity.Property(e => e.CustomerId).HasColumnName("customerID");
             entity.Property(e => e.Gender).HasColumnName("gender");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("name");
+            entity.Property(e => e.Status).HasColumnName("status");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Patients)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK__patient__account__398D8EEE");
+            entity.HasOne(d => d.Customer).WithMany(p => p.Patients)
+                .HasForeignKey(d => d.CustomerId)
+                .HasConstraintName("FK__patient__custome__398D8EEE");
         });
 
         modelBuilder.Entity<Profession>(entity =>
         {
-            entity.HasKey(e => e.ProfessionId).HasName("PK__professi__2FE3880387C5072D");
+            entity.HasKey(e => e.ProfessionId).HasName("PK__professi__2FE388033ADB09F8");
 
             entity.ToTable("profession");
 
@@ -222,7 +232,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Schedule>(entity =>
         {
-            entity.HasKey(e => e.ScheduleId).HasName("PK__schedule__A532EDB41BF3A02B");
+            entity.HasKey(e => e.ScheduleId).HasName("PK__schedule__A532EDB436F67C4F");
 
             entity.ToTable("schedule");
 
@@ -241,28 +251,29 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Transaction>(entity =>
         {
-            entity.HasKey(e => e.TransactionId).HasName("PK__transact__9B57CF52735971E1");
+            entity.HasKey(e => e.TransactionId).HasName("PK__transact__9B57CF528D0E69C6");
 
             entity.ToTable("transaction");
 
             entity.Property(e => e.TransactionId).HasColumnName("transactionID");
-            entity.Property(e => e.AccountId).HasColumnName("accountID");
             entity.Property(e => e.AppointmentId).HasColumnName("appointmentID");
+            entity.Property(e => e.CustomerId).HasColumnName("customerID");
             entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.TransactionTime).HasColumnName("transactionTime");
-
-            entity.HasOne(d => d.Account).WithMany(p => p.Transactions)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK__transacti__accou__440B1D61");
 
             entity.HasOne(d => d.Appointment).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.AppointmentId)
                 .HasConstraintName("FK__transacti__appoi__44FF419A");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Transactions)
+                .HasForeignKey(d => d.CustomerId)
+                .HasConstraintName("FK__transacti__custo__440B1D61");
         });
 
         modelBuilder.Entity<Treatment>(entity =>
         {
-            entity.HasKey(e => e.TreatmentId).HasName("PK__treatmen__D7AA588830A3B879");
+            entity.HasKey(e => e.TreatmentId).HasName("PK__treatmen__D7AA588899941EEC");
 
             entity.ToTable("treatment");
 
@@ -276,6 +287,7 @@ public partial class DentalClinicDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("name");
             entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.Status).HasColumnName("status");
         });
 
         OnModelCreatingPartial(modelBuilder);

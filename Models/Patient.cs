@@ -15,11 +15,13 @@ public partial class Patient
 
     public int? Gender { get; set; }
 
-    public int? AccountId { get; set; }
+    public int? Status { get; set; }
 
-    public virtual Account? Account { get; set; }
+    public int? CustomerId { get; set; }
 
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
+    public virtual Customer? Customer { get; set; }
 
     public virtual ICollection<MedicalRecord> MedicalRecords { get; set; } = new List<MedicalRecord>();
 }

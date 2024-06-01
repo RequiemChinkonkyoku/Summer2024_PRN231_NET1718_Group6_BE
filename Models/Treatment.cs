@@ -13,6 +13,8 @@ public partial class Treatment
 
     public string? Description { get; set; }
 
+    public int? Status { get; set; }
+
     public virtual ICollection<AppointmentDetail> AppointmentDetails { get; set; } = new List<AppointmentDetail>();
 
     public virtual ICollection<Profession> Professions { get; set; } = new List<Profession>();

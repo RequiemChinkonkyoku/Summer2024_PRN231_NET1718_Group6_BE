@@ -20,8 +20,8 @@ namespace DentalClinic_API.Controllers
         [HttpGet("get-all-dentists")]
         public async Task<ActionResult<List<Dentist>>> GetAllDentist()
         {
-            var patients = await _dentistService.GetAllDentistAsync();
-            return Ok(patients);
+            var dentists = await _dentistService.GetAllDentistAsync();
+            return Ok(dentists);
         }
 
         [HttpGet("get-dentist-by-id/{id}")]
@@ -51,11 +51,39 @@ namespace DentalClinic_API.Controllers
 
             if (dentist != null)
             {
+                HttpContext.Session.SetInt32("DentistID", dentist.DentistId);
+                HttpContext.Session.SetString("AccountType", "Dentist");
                 return Ok(dentist);
             }
             else
             {
                 return Unauthorized();
+            }
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+
+            Response.Cookies.Delete(".CCP.Session");
+
+            return Ok(new { message = "Logged out successfully" });
+        }
+
+        [HttpGet("get-session")]
+        public IActionResult GetSession()
+        {
+            var _session = HttpContext.Session;
+            var dentistID = _session.GetInt32("DentistID");
+
+            if (dentistID != null)
+            {
+                return Ok(new { DentistID = dentistID });
+            }
+            else
+            {
+                return NotFound("Session data not found.");
             }
         }
 
@@ -86,7 +114,7 @@ namespace DentalClinic_API.Controllers
                 return BadRequest();
             }
 
-            var updatedDentist = await _dentistService.UpdateDentist(id, updateDentistRequest); 
+            var updatedDentist = await _dentistService.UpdateDentist(id, updateDentistRequest);
 
             if (updatedDentist == null)
             {
