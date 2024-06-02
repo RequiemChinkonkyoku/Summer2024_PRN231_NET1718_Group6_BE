@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Models;
 using Models.DTOs;
+using Services.Implement;
 using Services.Interface;
 
 namespace DentalClinic_API.Controllers
@@ -32,6 +33,21 @@ namespace DentalClinic_API.Controllers
             if (patient != null)
             {
                 return Ok(patient);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("get-medical-record/{id}")]
+        public async Task<ActionResult<MedicalRecord>> ViewMedicalRecord(int id)
+        {
+            var medicalrecord = await _patientService.ViewMedicalRecord(id);
+
+            if (medicalrecord != null)
+            {
+                return Ok(medicalrecord);
             }
             else
             {
