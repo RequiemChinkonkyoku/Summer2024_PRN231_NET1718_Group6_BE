@@ -39,6 +39,21 @@ namespace DentalClinic_API.Controllers
             }
         }
 
+        [HttpGet("view-dentist-schedule/{id}")]
+        public async Task<ActionResult<Schedule>> ViewSchedule(int id)
+        {
+            var schedule = await _dentistService.ViewSchedule(id);
+
+            if (schedule != null)
+            {
+                return Ok(schedule);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         [HttpPost("dentist-login")]
         public async Task<ActionResult<Dentist>> PatientLogin([FromBody] LoginRequest loginRequest)
         {

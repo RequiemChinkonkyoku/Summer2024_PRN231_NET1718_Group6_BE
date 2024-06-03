@@ -15,10 +15,14 @@ namespace Services.Implement
     public class PatientService : IPatientService
     {
         private IRepositoryBase<Patient> _patientRepo;
+        private IRepositoryBase<MedicalRecord> _medicalRecordRepo;
+        private readonly IRepositoryBase<Schedule> _scheduleRepo;
 
-        public PatientService(IRepositoryBase<Patient> patientRepository)
+        public PatientService(IRepositoryBase<Patient> patientRepository, IRepositoryBase<MedicalRecord> medicalRecordRepo, IRepositoryBase<Schedule> scheduleRepo)
         {
             _patientRepo = patientRepository;
+            _medicalRecordRepo = medicalRecordRepo;
+            _scheduleRepo = scheduleRepo;
         }
 
         public async Task<List<Patient>> GetAllPatient()
@@ -66,7 +70,7 @@ namespace Services.Implement
 
         public async Task<Patient> UpdatePatientAsync(int patientId, UpdatePatientRequest updatePatientRequest, int accountId)
         {
-            var patient = await _patientRepo.GetAllAsync(); 
+            var patient = await _patientRepo.GetAllAsync();
             var updatepatient = patient.FirstOrDefault(d => d.PatientId == patientId);
 
             if (updatepatient != null)
@@ -85,6 +89,33 @@ namespace Services.Implement
 
             await _patientRepo.UpdateAsync(updatepatient);
             return updatepatient;
+        }
+
+        public async Task<MedicalRecord> ViewMedicalRecord(int id)
+        {
+            var medicalrecords = await _medicalRecordRepo.GetAllAsync();
+            if (!medicalrecords.IsNullOrEmpty())
+            {
+                var medicalrecord = medicalrecords.FirstOrDefault(m => m.PatientId == id);
+
+                if (medicalrecord != null)
+                {
+                    return medicalrecord;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<Schedule>> ViewClinicScheduleAsync()
+        {
+            return await _scheduleRepo.GetAllAsync();
         }
     }
 }
