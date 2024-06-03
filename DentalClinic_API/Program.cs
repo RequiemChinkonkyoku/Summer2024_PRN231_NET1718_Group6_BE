@@ -129,7 +129,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("MyCorsPolicy");
+app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 

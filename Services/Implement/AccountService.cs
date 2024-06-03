@@ -30,7 +30,7 @@ namespace Services.Implement
         public async Task<string> CustomerLogin(string email, string password)
         {
             // Validate user credentials
-            if (!(CustomerValidate(email, password) == null))
+            if (CustomerValidate(email, password).Result)
             {
                 // Generate JWT token
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -61,25 +61,26 @@ namespace Services.Implement
             return null;
         }
 
-        private async Task<Customer> CustomerValidate(string email, string password)
+        private async Task<bool> CustomerValidate(string email, string password)
         {
+            var result = false;
             var customers = await _customerRepo.GetAllAsync();
             if (!customers.IsNullOrEmpty())
             {
                 var customer = customers.FirstOrDefault(x => x.Email.Equals(email)
-                                                      && x.Password.Equals(password));
+                                                             && x.Password.Equals(password));
                 if (customer != null)
                 {
-                    return customer;
+                    result = true;
                 }
             }
-            return null;
+            return result;
         }
 
         public async Task<string> DentistLogin(string email, string password)
         {
             // Validate user credentials
-            if (!(DentistValidate(email, password) == null))
+            if (DentistValidate(email, password).Result)
             {
                 // Generate JWT token
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -111,8 +112,9 @@ namespace Services.Implement
         }
 
 
-        private async Task<Dentist> DentistValidate(string email, string password)
+        private async Task<bool> DentistValidate(string email, string password)
         {
+            bool result = false;
             var dentists = await _dentistRepo.GetAllAsync();
             if (!dentists.IsNullOrEmpty())
             {
@@ -120,10 +122,10 @@ namespace Services.Implement
                                                       && x.Password.Equals(password));
                 if (!(dentist == null))
                 {
-                    return dentist;
+                    result = true;
                 }
             }
-            return null;
+            return result;
         }
     }
 }
