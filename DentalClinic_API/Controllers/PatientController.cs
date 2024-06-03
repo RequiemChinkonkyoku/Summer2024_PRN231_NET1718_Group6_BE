@@ -65,44 +65,15 @@ namespace DentalClinic_API.Controllers
         [HttpPost("add-patient")]
         public async Task<IActionResult> AddPatient([FromBody] AddPatientRequest addPatientRequest)
         {
-            
-            var accountId = HttpContext.Session.GetInt32("PatientID");
-
-            if (!accountId.HasValue)
-            {
-                return Unauthorized("User not logged in");
-            }
-            try
-            {
-                var _newpatient = await _patientService.AddPatientAsync(addPatientRequest, accountId.Value);
-                return Ok(_newpatient);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            var _newPatient = await _patientService.AddPatientAsync(addPatientRequest, 1);
+            return Ok(_newPatient);
         }
 
         [HttpPut("update-patient/{id}")]
         public async Task<IActionResult> UpdatePatient(int patientId, [FromBody] UpdatePatientRequest updatePatientRequest)
         {
-            try
-            {
-                var accountId = HttpContext.Session.GetInt32("PatientID");
-
-                if (!accountId.HasValue)
-                {
-                    return Unauthorized("User not logged in");
-                }
-
-                var _updatedPatient = await _patientService.UpdatePatientAsync(patientId, updatePatientRequest, accountId.Value);
-
-                return Ok(_updatedPatient);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            var _updatedPatient = await _patientService.UpdatePatientAsync(patientId, updatePatientRequest, 1);
+            return Ok(_updatedPatient);
         }
     }
 }

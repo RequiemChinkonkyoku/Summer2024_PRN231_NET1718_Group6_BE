@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Models;
 using Models.DTOs;
 using Repositories.Implement;
@@ -6,7 +7,9 @@ using Repositories.Interface;
 using Services.Interface;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,29 +38,6 @@ namespace Services.Implement
             if (!dentists.IsNullOrEmpty())
             {
                 var dentist = dentists.FirstOrDefault(d => d.DentistId == id);
-
-                if (dentist != null)
-                {
-                    return dentist;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
-        public async Task<Dentist> DentistLogin(string email, string password)
-        {
-            var dentists = await _dentistRepo.GetAllAsync();
-
-            if (!dentists.IsNullOrEmpty())
-            {
-                var dentist = dentists.FirstOrDefault(p => p.Email.Equals(email) &&
-                                                           p.Password.Equals(password));
 
                 if (dentist != null)
                 {

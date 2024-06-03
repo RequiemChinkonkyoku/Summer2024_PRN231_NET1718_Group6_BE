@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.DTOs;
 using Services.Implement;
@@ -18,6 +19,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpGet("get-all-dentists")]
+        [Authorize(Roles = "Dentist")]
         public async Task<ActionResult<List<Dentist>>> GetAllDentist()
         {
             var dentists = await _dentistService.GetAllDentistAsync();
@@ -51,54 +53,6 @@ namespace DentalClinic_API.Controllers
             else
             {
                 return NotFound();
-            }
-        }
-
-        [HttpPost("dentist-login")]
-        public async Task<ActionResult<Dentist>> PatientLogin([FromBody] LoginRequest loginRequest)
-        {
-            if (loginRequest == null)
-            {
-                return BadRequest("Invalid request");
-            }
-
-            var dentist = await _dentistService.DentistLogin(loginRequest.Email, loginRequest.Password);
-
-            if (dentist != null)
-            {
-                HttpContext.Session.SetInt32("DentistID", dentist.DentistId);
-                HttpContext.Session.SetString("AccountType", "Dentist");
-                return Ok(dentist);
-            }
-            else
-            {
-                return Unauthorized();
-            }
-        }
-
-        [HttpPost("logout")]
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Clear();
-
-            Response.Cookies.Delete(".CCP.Session");
-
-            return Ok(new { message = "Logged out successfully" });
-        }
-
-        [HttpGet("get-session")]
-        public IActionResult GetSession()
-        {
-            var _session = HttpContext.Session;
-            var dentistID = _session.GetInt32("DentistID");
-
-            if (dentistID != null)
-            {
-                return Ok(new { DentistID = dentistID });
-            }
-            else
-            {
-                return NotFound("Session data not found.");
             }
         }
 

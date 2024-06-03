@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace Services.Interface
 {
-    public interface ICustomerService
+    public interface IAccountService
     {
-        Task<List<Customer>> GetAllCustomersAsync();
+        Task<string> CustomerLogin(string email, string password);
+
+        Task<string> DentistLogin(string email, string password);
     }
 }
