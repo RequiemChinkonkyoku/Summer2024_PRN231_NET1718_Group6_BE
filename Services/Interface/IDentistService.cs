@@ -10,7 +10,6 @@ namespace Services.Interface
 {
     public interface IDentistService
     {
-        Task<string> DentistLogin(string email, string password);
         Task<List<Dentist>> GetAllDentistAsync();
         Task<Dentist> GetDentistByID(int id);
         Task<Dentist> DentistAdd(AddDentistRequest addDentistRequest);

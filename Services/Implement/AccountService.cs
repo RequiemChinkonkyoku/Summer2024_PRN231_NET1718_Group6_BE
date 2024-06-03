@@ -18,17 +18,19 @@ namespace Services.Implement
 {
     public class AccountService : IAccountService
     {
-        private readonly IRepositoryBase<Account> _accountRepo;
+        private readonly IRepositoryBase<Customer> _customerRepo;
+        private readonly IRepositoryBase<Dentist> _dentistRepo;
 
-        public AccountService(IRepositoryBase<Account> accountRepo)
+        public AccountService(IRepositoryBase<Customer> customerRepo, IRepositoryBase<Dentist> dentistRepo)
         {
-            _accountRepo = accountRepo;
+            _customerRepo = customerRepo;
+            _dentistRepo = dentistRepo;
         }
 
-        public async Task<string> AccountLogin(string email, string password)
+        public async Task<string> CustomerLogin(string email, string password)
         {
             // Validate user credentials
-            if (!(AccountValidate(email, password) == null))
+            if (!(CustomerValidate(email, password) == null))
             {
                 // Generate JWT token
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -44,7 +46,7 @@ namespace Services.Implement
                     {
                     new Claim(ClaimTypes.NameIdentifier, email),
                     new Claim(ClaimTypes.Email, email),
-                    new Claim(ClaimTypes.Role, "Account")
+                    new Claim(ClaimTypes.Role, "Customer")
                 }),
                     Expires = DateTime.UtcNow.AddMinutes(15),
                     Issuer = config["Jwt:Issuer"],
@@ -59,24 +61,69 @@ namespace Services.Implement
             return null;
         }
 
-        private async Task<Account> AccountValidate(string email, string password)
+        private async Task<Customer> CustomerValidate(string email, string password)
         {
-            var accounts = await _accountRepo.GetAllAsync();
-            if (!accounts.IsNullOrEmpty())
+            var customers = await _customerRepo.GetAllAsync();
+            if (!customers.IsNullOrEmpty())
             {
-                var account = accounts.FirstOrDefault(x => x.Email.Equals(email)
+                var customer = customers.FirstOrDefault(x => x.Email.Equals(email)
                                                       && x.Password.Equals(password));
-                if (!(account == null))
+                if (customer != null)
                 {
-                    return account;
+                    return customer;
                 }
             }
             return null;
         }
 
-        public async Task<List<Account>> GetAllAccountsAsync()
+        public async Task<string> DentistLogin(string email, string password)
         {
-            return await _accountRepo.GetAllAsync();
+            // Validate user credentials
+            if (!(DentistValidate(email, password) == null))
+            {
+                // Generate JWT token
+                var tokenHandler = new JwtSecurityTokenHandler();
+                IConfiguration config = new ConfigurationBuilder()
+                  .SetBasePath(Directory.GetCurrentDirectory())
+                  .AddJsonFile("appsettings.json", true, true)
+                  .Build();
+                var strConn = config["ConnectionStrings:DentalClinicDB"];
+                var key = Encoding.UTF8.GetBytes(config["Jwt:Key"]);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[]
+                    {
+                    new Claim(ClaimTypes.NameIdentifier, email),
+                    new Claim(ClaimTypes.Email, email),
+                    new Claim(ClaimTypes.Role, "Dentist")
+                }),
+                    Expires = DateTime.UtcNow.AddMinutes(15),
+                    Issuer = config["Jwt:Issuer"],
+                    Audience = config["Jwt:Audience"],
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+            }
+
+            // If credentials are invalid
+            return null;
+        }
+
+
+        private async Task<Dentist> DentistValidate(string email, string password)
+        {
+            var dentists = await _dentistRepo.GetAllAsync();
+            if (!dentists.IsNullOrEmpty())
+            {
+                var dentist = dentists.FirstOrDefault(x => x.Email.Equals(email)
+                                                      && x.Password.Equals(password));
+                if (!(dentist == null))
+                {
+                    return dentist;
+                }
+            }
+            return null;
         }
     }
 }

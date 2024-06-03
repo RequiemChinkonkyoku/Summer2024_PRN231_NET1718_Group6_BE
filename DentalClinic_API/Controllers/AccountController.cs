@@ -19,10 +19,10 @@ namespace DentalClinic_API.Controllers
             _accountService = accountService;
         }
 
-        [HttpPost("account-login")]
-        public async Task<IActionResult> AccountLogin([FromBody] LoginRequest loginRequest)
+        [HttpPost("customer-login")]
+        public async Task<IActionResult> CustomerLogin([FromBody] LoginRequest loginRequest)
         {
-            var token = await _accountService.AccountLogin(loginRequest.Email, loginRequest.Password);
+            var token = await _accountService.CustomerLogin(loginRequest.Email, loginRequest.Password);
 
             if (token == null)
             {
@@ -32,12 +32,17 @@ namespace DentalClinic_API.Controllers
             return Ok(new { Token = token });
         }
 
-        [HttpGet("get-all-accounts")]
-        [Authorize(Roles = "Account")]
-        public async Task<ActionResult<List<Account>>> GetAllAccounts()
+        [HttpPost("dentist-login")]
+        public async Task<IActionResult> DentistLogin([FromBody] LoginRequest loginRequest)
         {
-            var accounts = await _accountService.GetAllAccountsAsync();
-            return Ok(accounts);
+            var token = await _accountService.DentistLogin(loginRequest.Email, loginRequest.Password);
+
+            if (token == null)
+            {
+                return Unauthorized("Invalid credentials");
+            }
+
+            return Ok(new { Token = token });
         }
     }
 }

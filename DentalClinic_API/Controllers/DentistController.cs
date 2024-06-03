@@ -56,45 +56,6 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpPost("dentist-login")]
-        public async Task<IActionResult> DentistLogin([FromBody] LoginRequest loginRequest)
-        {
-            var token = await _dentistService.DentistLogin(loginRequest.Email, loginRequest.Password);
-
-            if (token == null)
-            {
-                return Unauthorized("Invalid credentials");
-            }
-
-            return Ok(new { Token = token });
-        }
-
-        [HttpPost("logout")]
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Clear();
-
-            Response.Cookies.Delete(".CCP.Session");
-
-            return Ok(new { message = "Logged out successfully" });
-        }
-
-        [HttpGet("get-session")]
-        public IActionResult GetSession()
-        {
-            var _session = HttpContext.Session;
-            var dentistID = _session.GetInt32("DentistID");
-
-            if (dentistID != null)
-            {
-                return Ok(new { DentistID = dentistID });
-            }
-            else
-            {
-                return NotFound("Session data not found.");
-            }
-        }
-
         [HttpPost("add-dentist")]
         public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
         {

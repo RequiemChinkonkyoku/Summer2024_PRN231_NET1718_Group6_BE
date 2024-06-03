@@ -86,8 +86,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AccountAuth",
-        policy => policy.RequireClaim(ClaimTypes.Role, "Account"));
+    options.AddPolicy("CustomerAuth",
+        policy => policy.RequireClaim(ClaimTypes.Role, "Customer"));
     options.AddPolicy("DentistAuth",
         policy => policy.RequireClaim(ClaimTypes.Role, "Dentist"));
 });
@@ -103,6 +103,7 @@ builder.Services.AddScoped<IRepositoryBase<Schedule>, ScheduleRepository>();
 builder.Services.AddScoped<IRepositoryBase<Treatment>, TreatmentRepository>();
 builder.Services.AddScoped<IRepositoryBase<Models.Transaction>, TransactionRepository>();
 
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IDentistService, DentistService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();

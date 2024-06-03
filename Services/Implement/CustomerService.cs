@@ -21,21 +21,9 @@ namespace Services.Implement
             _customerRepo = customerRepo;
         }
 
-        public async Task<Customer> CustomerLogin(string email, string password)
+        public async Task<List<Customer>> GetAllCustomersAsync()
         {
-            var customers = await _customerRepo.GetAllAsync();
-
-            if (!customers.IsNullOrEmpty())
-            {
-                var customer = customers.FirstOrDefault(a => a.Email.Equals(email) &&
-                                                           a.Password.Equals(password));
-
-                if (customer != null)
-                {
-                    return customer;
-                }
-            }
-            return null;
+            return await _customerRepo.GetAllAsync();
         }
     }
 }
