@@ -11,11 +11,13 @@ public partial class Transaction
 
     public TimeSpan? TransactionTime { get; set; }
 
-    public int? AccountId { get; set; }
+    public int? Status { get; set; }
+
+    public int? CustomerId { get; set; }
 
     public int? AppointmentId { get; set; }
 
-    public virtual Account? Account { get; set; }
-
     public virtual Appointment? Appointment { get; set; }
+
+    public virtual Customer? Customer { get; set; }
 }

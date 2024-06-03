@@ -18,10 +18,12 @@ namespace Services.Implement
     public class DentistService : IDentistService
     {
         private readonly IRepositoryBase<Dentist> _dentistRepo;
+        private readonly IRepositoryBase<Schedule> _scheduleRepo;
 
-        public DentistService(IRepositoryBase<Dentist> dentistRepository)
+        public DentistService(IRepositoryBase<Dentist> dentistRepository, IRepositoryBase<Schedule> scheduleRepository)
         {
             _dentistRepo = dentistRepository;
+            _scheduleRepo = scheduleRepository;
         }
 
         public async Task<List<Dentist>> GetAllDentistAsync()
@@ -147,6 +149,27 @@ namespace Services.Implement
             deletedentist.Status = 0;
             await _dentistRepo.UpdateAsync(deletedentist);
             return deletedentist;
+        }
+        public async Task<Schedule> ViewSchedule(int id) 
+        {
+            var schedules = await _scheduleRepo.GetAllAsync();
+            if (!schedules.IsNullOrEmpty())
+            {
+                var schedule = schedules.FirstOrDefault(s => s.DentistId == id);
+
+                if (schedule != null)
+                {
+                    return schedule;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
 
     }

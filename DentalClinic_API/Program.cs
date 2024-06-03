@@ -97,7 +97,7 @@ builder.Services.AddScoped<IRepositoryBase<AppointmentDetail>, AppointmentDetail
 builder.Services.AddScoped<IRepositoryBase<Dentist>, DentistRepository>();
 builder.Services.AddScoped<IRepositoryBase<Profession>, ProfessionRepository>();
 builder.Services.AddScoped<IRepositoryBase<MedicalRecord>, MedicalRecordRepository>();
-builder.Services.AddScoped<IRepositoryBase<Account>, AccountRepository>();
+builder.Services.AddScoped<IRepositoryBase<Customer>, CustomerRepository>();
 builder.Services.AddScoped<IRepositoryBase<Patient>, PatientRepository>();
 builder.Services.AddScoped<IRepositoryBase<Schedule>, ScheduleRepository>();
 builder.Services.AddScoped<IRepositoryBase<Treatment>, TreatmentRepository>();
@@ -105,7 +105,9 @@ builder.Services.AddScoped<IRepositoryBase<Models.Transaction>, TransactionRepos
 
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IDentistService, DentistService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IAppointmentDetailService, AppointmentDetailService>();
 
 builder.Services.AddDistributedMemoryCache();
 

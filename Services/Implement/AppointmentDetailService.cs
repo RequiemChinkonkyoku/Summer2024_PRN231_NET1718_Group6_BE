@@ -1,13 +1,13 @@
-﻿using Models;
+﻿using Services.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repositories.Implement
+namespace Services.Implement
 {
-    public class AccountRepository : RepositoryBase<Account>
+    public class AppointmentDetailService : IAppointmentDetailService
     {
     }
 }

@@ -15,10 +15,14 @@ namespace Services.Implement
     public class PatientService : IPatientService
     {
         private IRepositoryBase<Patient> _patientRepo;
+        private IRepositoryBase<MedicalRecord> _medicalRecordRepo;
+        private readonly IRepositoryBase<Schedule> _scheduleRepo;
 
-        public PatientService(IRepositoryBase<Patient> patientRepository)
+        public PatientService(IRepositoryBase<Patient> patientRepository, IRepositoryBase<MedicalRecord> medicalRecordRepo, IRepositoryBase<Schedule> scheduleRepo)
         {
             _patientRepo = patientRepository;
+            _medicalRecordRepo = medicalRecordRepo;
+            _scheduleRepo = scheduleRepo;
         }
 
         public async Task<List<Patient>> GetAllPatient()
@@ -57,7 +61,7 @@ namespace Services.Implement
                 Age = addPatientRequest.Age,
                 Address = addPatientRequest.Address,
                 Gender = addPatientRequest.Gender,
-                AccountId = accountId
+                CustomerId = accountId
             };
 
             await _patientRepo.AddAsync(patient);
@@ -66,12 +70,12 @@ namespace Services.Implement
 
         public async Task<Patient> UpdatePatientAsync(int patientId, UpdatePatientRequest updatePatientRequest, int accountId)
         {
-            var patient = await _patientRepo.GetAllAsync(); 
+            var patient = await _patientRepo.GetAllAsync();
             var updatepatient = patient.FirstOrDefault(d => d.PatientId == patientId);
 
             if (updatepatient != null)
             {
-                if (updatepatient.AccountId != accountId)
+                if (updatepatient.CustomerId != accountId)
                 {
                     throw new Exception("You do not have permission to update this patient");
                 }
@@ -79,12 +83,39 @@ namespace Services.Implement
                 updatepatient.Age = updatePatientRequest.Age;
                 updatepatient.Address = updatePatientRequest.Address;
                 updatepatient.Gender = updatePatientRequest.Gender;
-                updatepatient.AccountId = accountId;
+                updatepatient.CustomerId = accountId;
             }
             else return null;
 
             await _patientRepo.UpdateAsync(updatepatient);
             return updatepatient;
+        }
+
+        public async Task<MedicalRecord> ViewMedicalRecord(int id)
+        {
+            var medicalrecords = await _medicalRecordRepo.GetAllAsync();
+            if (!medicalrecords.IsNullOrEmpty())
+            {
+                var medicalrecord = medicalrecords.FirstOrDefault(m => m.PatientId == id);
+
+                if (medicalrecord != null)
+                {
+                    return medicalrecord;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<Schedule>> ViewClinicScheduleAsync()
+        {
+            return await _scheduleRepo.GetAllAsync();
         }
     }
 }
