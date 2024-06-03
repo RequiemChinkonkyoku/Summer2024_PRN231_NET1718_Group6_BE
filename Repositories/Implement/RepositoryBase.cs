@@ -45,8 +45,8 @@ namespace Repositories.Implement
         }
         public async Task DeleteAsync(T item)
         {
-           dbSet.Remove(item);
-           await context.SaveChangesAsync();
+            dbSet.Remove(item);
+            await context.SaveChangesAsync();
         }
 
         public void Update(T item)
@@ -61,7 +61,7 @@ namespace Repositories.Implement
             await context.SaveChangesAsync();
         }
 
-        public async Task<T> FindByIdAsync(T id)
+        public async Task<T> FindByIdAsync(int id)
         {
             return await dbSet.FindAsync(id);
         }

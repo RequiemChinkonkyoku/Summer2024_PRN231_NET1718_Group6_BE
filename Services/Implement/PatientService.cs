@@ -57,7 +57,7 @@ namespace Services.Implement
                 Age = addPatientRequest.Age,
                 Address = addPatientRequest.Address,
                 Gender = addPatientRequest.Gender,
-                AccountId = accountId
+                CustomerId = accountId
             };
 
             await _patientRepo.AddAsync(patient);
@@ -71,7 +71,7 @@ namespace Services.Implement
 
             if (updatepatient != null)
             {
-                if (updatepatient.AccountId != accountId)
+                if (updatepatient.CustomerId != accountId)
                 {
                     throw new Exception("You do not have permission to update this patient");
                 }
@@ -79,7 +79,7 @@ namespace Services.Implement
                 updatepatient.Age = updatePatientRequest.Age;
                 updatepatient.Address = updatePatientRequest.Address;
                 updatepatient.Gender = updatePatientRequest.Gender;
-                updatepatient.AccountId = accountId;
+                updatepatient.CustomerId = accountId;
             }
             else return null;
 

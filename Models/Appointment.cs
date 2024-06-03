@@ -21,13 +21,13 @@ public partial class Appointment
 
     public int? TotalPrice { get; set; }
 
-    public int? AccountId { get; set; }
+    public int? CustomerId { get; set; }
 
     public int? PatientId { get; set; }
 
-    public virtual Account? Account { get; set; }
-
     public virtual ICollection<AppointmentDetail> AppointmentDetails { get; set; } = new List<AppointmentDetail>();
+
+    public virtual Customer? Customer { get; set; }
 
     public virtual ICollection<MedicalRecord> MedicalRecords { get; set; } = new List<MedicalRecord>();
 
