@@ -55,6 +55,13 @@ namespace DentalClinic_API.Controllers
             }
         }
 
+        [HttpGet("get-clinic-schedule")]
+        public async Task<ActionResult<List<Schedule>>> ViewClinicSchedule()
+        {
+            var schedules = await _patientService.ViewClinicScheduleAsync();
+            return Ok(schedules);
+        }
+
         [HttpPost("add-patient")]
         public async Task<IActionResult> AddPatient([FromBody] AddPatientRequest addPatientRequest)
         {

@@ -16,11 +16,13 @@ namespace Services.Implement
     {
         private IRepositoryBase<Patient> _patientRepo;
         private IRepositoryBase<MedicalRecord> _medicalRecordRepo;
+        private readonly IRepositoryBase<Schedule> _scheduleRepo;
 
-        public PatientService(IRepositoryBase<Patient> patientRepository, IRepositoryBase<MedicalRecord> medicalRecordRepo)
+        public PatientService(IRepositoryBase<Patient> patientRepository, IRepositoryBase<MedicalRecord> medicalRecordRepo, IRepositoryBase<Schedule> scheduleRepo)
         {
             _patientRepo = patientRepository;
             _medicalRecordRepo = medicalRecordRepo;
+            _scheduleRepo = scheduleRepo;
         }
 
         public async Task<List<Patient>> GetAllPatient()
@@ -109,6 +111,11 @@ namespace Services.Implement
             {
                 return null;
             }
+        }
+
+        public async Task<List<Schedule>> ViewClinicScheduleAsync()
+        {
+            return await _scheduleRepo.GetAllAsync();
         }
     }
 }
