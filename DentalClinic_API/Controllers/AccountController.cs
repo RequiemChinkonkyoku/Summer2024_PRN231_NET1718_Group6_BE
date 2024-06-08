@@ -58,19 +58,5 @@ namespace DentalClinic_API.Controllers
 
             return Ok(result);
         }
-
-        //[HttpPost("log-out")]
-        //public async Task<IActionResult> Logout(string token)
-        //{
-        //    await _accountService.BlacklistToken(token);
-        //    return Ok();
-        //}
-
-        //[HttpPost("check-token-blacklisted")]
-        //public async Task<IActionResult> CheckTokenBlacklisted(string token)
-        //{
-        //    bool result = await _accountService.CheckTokenBlacklisted(token);
-        //    return Ok(result);
-        //}
     }
 }
