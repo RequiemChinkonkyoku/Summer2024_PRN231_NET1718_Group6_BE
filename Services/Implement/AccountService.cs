@@ -20,13 +20,11 @@ namespace Services.Implement
     {
         private readonly IRepositoryBase<Customer> _customerRepo;
         private readonly IRepositoryBase<Dentist> _dentistRepo;
-        private readonly IRepositoryBase<BlacklistedToken> _blacklistedTokenRepo;
 
-        public AccountService(IRepositoryBase<Customer> customerRepo, IRepositoryBase<Dentist> dentistRepo, IRepositoryBase<BlacklistedToken> blacklistedTokenRepo)
+        public AccountService(IRepositoryBase<Customer> customerRepo, IRepositoryBase<Dentist> dentistRepo)
         {
             _customerRepo = customerRepo;
             _dentistRepo = dentistRepo;
-            _blacklistedTokenRepo = blacklistedTokenRepo;
         }
 
         public async Task<string> CustomerLogin(string email, string password)

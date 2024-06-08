@@ -19,8 +19,6 @@ public partial class DentalClinicDbContext : DbContext
 
     public virtual DbSet<AppointmentDetail> AppointmentDetails { get; set; }
 
-    public virtual DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
-
     public virtual DbSet<Customer> Customers { get; set; }
 
     public virtual DbSet<Dentist> Dentists { get; set; }
@@ -45,7 +43,7 @@ public partial class DentalClinicDbContext : DbContext
     {
         modelBuilder.Entity<Appointment>(entity =>
         {
-            entity.HasKey(e => e.AppointmentId).HasName("PK__appointm__D067651E0959AC73");
+            entity.HasKey(e => e.AppointmentId).HasName("PK__appointm__D067651E92271A2D");
 
             entity.ToTable("appointment");
 
@@ -75,7 +73,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<AppointmentDetail>(entity =>
         {
-            entity.HasKey(e => e.AppointmentDetailId).HasName("PK__appointm__B5CE973CA2F36049");
+            entity.HasKey(e => e.AppointmentDetailId).HasName("PK__appointm__B5CE973CAC343822");
 
             entity.ToTable("appointmentDetails");
 
@@ -102,24 +100,9 @@ public partial class DentalClinicDbContext : DbContext
                 .HasConstraintName("FK__appointme__treat__403A8C7D");
         });
 
-        modelBuilder.Entity<BlacklistedToken>(entity =>
-        {
-            entity.HasKey(e => e.TokenId).HasName("PK__blacklis__AC16DAA741F26453");
-
-            entity.ToTable("blacklistedTokens");
-
-            entity.Property(e => e.TokenId).HasColumnName("tokenID");
-            entity.Property(e => e.BlacklistTime)
-                .HasColumnType("datetime")
-                .HasColumnName("blacklistTime");
-            entity.Property(e => e.TokenString)
-                .HasMaxLength(255)
-                .HasColumnName("tokenString");
-        });
-
         modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.CustomerId).HasName("PK__customer__B611CB9DFC9CEA41");
+            entity.HasKey(e => e.CustomerId).HasName("PK__customer__B611CB9DDDE588BE");
 
             entity.ToTable("customer");
 
@@ -137,7 +120,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Dentist>(entity =>
         {
-            entity.HasKey(e => e.DentistId).HasName("PK__dentist__38160498B2B75CF4");
+            entity.HasKey(e => e.DentistId).HasName("PK__dentist__38160498E76ADC21");
 
             entity.ToTable("dentist");
 
@@ -164,7 +147,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<MedicalRecord>(entity =>
         {
-            entity.HasKey(e => e.RecordId).HasName("PK__medicalR__D825197E73CD0B29");
+            entity.HasKey(e => e.RecordId).HasName("PK__medicalR__D825197ED326FDEA");
 
             entity.ToTable("medicalRecord");
 
@@ -192,7 +175,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Patient>(entity =>
         {
-            entity.HasKey(e => e.PatientId).HasName("PK__patient__A17005CCF7308C26");
+            entity.HasKey(e => e.PatientId).HasName("PK__patient__A17005CC2876580D");
 
             entity.ToTable("patient");
 
@@ -217,7 +200,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Profession>(entity =>
         {
-            entity.HasKey(e => e.ProfessionId).HasName("PK__professi__2FE38803F780B0D8");
+            entity.HasKey(e => e.ProfessionId).HasName("PK__professi__2FE38803BA9C6B71");
 
             entity.ToTable("profession");
 
@@ -236,7 +219,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Schedule>(entity =>
         {
-            entity.HasKey(e => e.ScheduleId).HasName("PK__schedule__A532EDB4F30917E3");
+            entity.HasKey(e => e.ScheduleId).HasName("PK__schedule__A532EDB451C6A677");
 
             entity.ToTable("schedule");
 
@@ -255,7 +238,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Transaction>(entity =>
         {
-            entity.HasKey(e => e.TransactionId).HasName("PK__transact__9B57CF524976FE67");
+            entity.HasKey(e => e.TransactionId).HasName("PK__transact__9B57CF52E1D9E4EC");
 
             entity.ToTable("transaction");
 
@@ -279,7 +262,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Treatment>(entity =>
         {
-            entity.HasKey(e => e.TreatmentId).HasName("PK__treatmen__D7AA588854B4BCAD");
+            entity.HasKey(e => e.TreatmentId).HasName("PK__treatmen__D7AA5888B8C743F6");
 
             entity.ToTable("treatment");
 

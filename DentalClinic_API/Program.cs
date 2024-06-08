@@ -30,7 +30,6 @@ builder.Services.AddScoped<IRepositoryBase<Patient>, PatientRepository>();
 builder.Services.AddScoped<IRepositoryBase<Schedule>, ScheduleRepository>();
 builder.Services.AddScoped<IRepositoryBase<Treatment>, TreatmentRepository>();
 builder.Services.AddScoped<IRepositoryBase<Models.Transaction>, TransactionRepository>();
-builder.Services.AddScoped<IRepositoryBase<BlacklistedToken>, BlacklistedTokenRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
