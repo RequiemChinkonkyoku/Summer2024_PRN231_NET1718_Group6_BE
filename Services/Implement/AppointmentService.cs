@@ -19,18 +19,21 @@ namespace Services.Implement
         private readonly IRepositoryBase<Treatment> _treatmentRepo;
         private readonly IRepositoryBase<Patient> _patientRepo;
         private readonly IRepositoryBase<Dentist> _dentistRepo;
+        private readonly IRepositoryBase<Profession> _professionRepo;
 
         public AppointmentService(IRepositoryBase<Appointment> appointmentRepo,
                                   IRepositoryBase<AppointmentDetail> appDetailRepo,
                                   IRepositoryBase<Treatment> treatmentRepo,
                                   IRepositoryBase<Patient> patientRepo,
-                                  IRepositoryBase<Dentist> dentistRepo)
+                                  IRepositoryBase<Dentist> dentistRepo,
+                                  IRepositoryBase<Profession> professionRepo)
         {
             _appRepo = appointmentRepo;
             _appDetailRepo = appDetailRepo;
             _treatmentRepo = treatmentRepo;
             _patientRepo = patientRepo;
             _dentistRepo = dentistRepo;
+            _professionRepo = professionRepo;
         }
 
         public async Task<Appointment> CancelAppointment(int appID)
@@ -52,7 +55,6 @@ namespace Services.Implement
             if (request.PatientId == 0 ||
                 request.ArrivalDate == default ||
                 request.TimeSlot == 0 ||
-                request.BookingPrice < 0 ||
                 request.ScheduleId == 0 ||
                 request.TreatmentId == 0 ||
                 request.DentistId == 0)
@@ -86,17 +88,26 @@ namespace Services.Implement
                 return new CreateAppointmentResponse { Success = false, ErrrorMessage = "Dentist does not exists" };
             }
 
+            var professions = await _professionRepo.GetAllAsync();
+
+            var dentistPro = professions.Where(p => p.DentistId == dentist.DentistId);
+
+            if (dentistPro.IsNullOrEmpty())
+            {
+                return new CreateAppointmentResponse { Success = false, ErrrorMessage = "The dentist doesnt provide that treatment" };
+            }
+
             var appointment = new Appointment
             {
                 CreateDate = DateTime.Now,
                 ArrivalDate = request.ArrivalDate,
                 TimeSlot = request.TimeSlot,
                 Status = -1,
-                BookingPrice = request.BookingPrice,
+                BookingPrice = 50000,
                 ServicePrice = treatment.Price,
                 CustomerId = accountID,
                 PatientId = request.PatientId,
-                TotalPrice = request.BookingPrice + treatment.Price,
+                TotalPrice = 50000 + treatment.Price,
             };
 
             try
@@ -107,7 +118,7 @@ namespace Services.Implement
             }
             catch (Exception ex)
             {
-                return new CreateAppointmentResponse { Success = false, ErrrorMessage = $"Error adding appointment: {ex.Message}" };
+                return new CreateAppointmentResponse { Success = false, ErrrorMessage = $"Error creating appointment: {ex.Message}" };
             }
         }
 
