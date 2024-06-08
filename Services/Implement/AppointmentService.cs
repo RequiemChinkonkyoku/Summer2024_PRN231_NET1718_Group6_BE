@@ -55,7 +55,6 @@ namespace Services.Implement
             if (request.PatientId == 0 ||
                 request.ArrivalDate == default ||
                 request.TimeSlot == 0 ||
-                request.BookingPrice < 0 ||
                 request.ScheduleId == 0 ||
                 request.TreatmentId == 0 ||
                 request.DentistId == 0)
@@ -104,11 +103,11 @@ namespace Services.Implement
                 ArrivalDate = request.ArrivalDate,
                 TimeSlot = request.TimeSlot,
                 Status = -1,
-                BookingPrice = request.BookingPrice,
+                BookingPrice = 50000,
                 ServicePrice = treatment.Price,
                 CustomerId = accountID,
                 PatientId = request.PatientId,
-                TotalPrice = request.BookingPrice + treatment.Price,
+                TotalPrice = 50000 + treatment.Price,
             };
 
             try
