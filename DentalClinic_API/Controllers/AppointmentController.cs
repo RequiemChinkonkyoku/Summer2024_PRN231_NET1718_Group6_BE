@@ -23,93 +23,92 @@ namespace DentalClinic_API.Controllers
         [HttpGet("get-all-appointment")]
         public async Task<ActionResult<List<Appointment>>> GetAllAppointments()
         {
-            var session = GetSession();
+            //var session = GetSession();
 
-            if (session != null)
-            {
-                return Ok(await _appService.GetAllAppointments());
-            }
-            else
-            {
-                return Unauthorized("Unable to get session");
-            }
+            //if (session != null)
+            //{
+            return Ok(await _appService.GetAllAppointments());
+            //}
+            //else
+            //{
+            //    return Unauthorized("Unable to get session");
+            //}
         }
 
 
         [HttpGet("get-account-appointment")]
         public async Task<ActionResult<List<Appointment>>> GetAccountAppointments()
         {
-            var session = GetSession();
+            //var session = GetSession();
 
-            if (session != null)
+            //if (session != null)
+            //{
+            string accountType = "Customer";
+            int accountID = 1;
+
+            List<Appointment> appointmentList = null;
+
+            if (accountType.Equals("Customer"))
             {
-                string accountType = session.accountType;
-                int accountID = session.accountID;
+                appointmentList = await _appService.GetCustomerAppointments(accountID);
+            }
+            else if (accountType.Equals("Dentist"))
+            {
+                appointmentList = await _appService.GetDentistAppointments(accountID);
+            }
 
-                List<Appointment> appointmentList = null;
-
-                if (accountType.Equals("Customer"))
-                {
-                    appointmentList = await _appService.GetCustomerAppointments(accountID);
-                }
-                else if (accountType.Equals("Dentist"))
-                {
-                    appointmentList = await _appService.GetDentistAppointments(accountID);
-                }
-
-                if (!appointmentList.IsNullOrEmpty())
-                {
-                    return Ok(appointmentList);
-                }
-                else
-                {
-                    return BadRequest("No appointment found");
-                }
+            if (!appointmentList.IsNullOrEmpty())
+            {
+                return Ok(appointmentList);
             }
             else
             {
-                return Unauthorized("Unable to get session");
+                return BadRequest("No appointment found");
             }
         }
+        //else
+        //{
+        //    return Unauthorized("Unable to get session");
+        //}
 
         [HttpDelete("cancel-appointment/{id}")]
         public async Task<IActionResult> CancelAppointment(int id)
         {
-            var session = GetSession();
+            //var session = GetSession();
 
-            if (session != null)
+            //if (session != null)
+            //{
+            var appointment = await _appService.CancelAppointment(id);
+
+            if (appointment == null)
             {
-                var appointment = await _appService.CancelAppointment(id);
-
-                if (appointment == null)
-                {
-                    return BadRequest("Unable to cancel appointment with ID: " + id);
-                }
-
-                return Ok(appointment);
+                return BadRequest("Unable to cancel appointment with ID: " + id);
             }
-            else
-            {
-                return Unauthorized("Unable to get session");
-            }
+
+            return Ok(appointment);
+            //}
+            //else
+            //{
+            //    return Unauthorized("Unable to get session");
+            //}
         }
 
         [HttpPost("create-appointment")]
         public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] CreateAppointmentRequest request)
         {
-            var session = GetSession();
+            //var session = GetSession();
 
-            if (session == null)
-            {
-                return Unauthorized("Unable to get session");
-            }
+            //if (session == null)
+            //{
+            //    return Unauthorized("Unable to get session");
+            //}
 
             if (request == null)
             {
                 return BadRequest("Invalid request");
             }
 
-            var response = await _appService.CreateAppointment(request, session.accountID);
+            var response = await _appService.CreateAppointment(request, 1);
 
             if (!response.Success)
             {
