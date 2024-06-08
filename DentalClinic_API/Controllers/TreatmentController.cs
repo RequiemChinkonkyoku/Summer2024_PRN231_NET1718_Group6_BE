@@ -23,6 +23,21 @@ namespace DentalClinic_API.Controllers
             return Ok(patients);
         }
 
+        [HttpGet("get-treatment-by-id/{id}")]
+        public async Task<ActionResult<Dentist>> GetDentistById(int id)
+        {
+            var treatment = await _treatmentService.GetTreatmentByID(id);
+
+            if (treatment != null)
+            {
+                return Ok(treatment);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         [HttpPost("add-treatment")]
         public async Task<ActionResult<Treatment>> AddTreatment([FromBody] AddTreatmentRequest addTreatmentRequest)
         {

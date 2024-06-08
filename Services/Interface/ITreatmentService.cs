@@ -11,6 +11,7 @@ namespace Services.Interface
     public interface  ITreatmentService
     {
         Task<List<Treatment>> GetAllTreatment();
+        Task<Treatment> GetTreatmentByID(int id);
         Task<Treatment> AddTreatmentAsync(AddTreatmentRequest addTreatmentRequest);
         Task<Treatment> UpdateTreatmentAsync(int treatmentID, UpdateTreatmentRequest updateTreatmentRequest);
         Task<Treatment> DeleteTreatmentAsync(int id);

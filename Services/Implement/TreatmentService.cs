@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Microsoft.IdentityModel.Tokens;
+using Models;
 using Models.DTOs;
 using Repositories.Interface;
 using Services.Interface;
@@ -24,6 +25,28 @@ namespace Services.Implement
             return await _treatmentRepo.GetAllAsync();
         }
 
+        public async Task<Treatment> GetTreatmentByID(int id)
+        {
+            var treatments = await _treatmentRepo.GetAllAsync();
+
+            if (!treatments.IsNullOrEmpty())
+            {
+                var treatment = treatments.FirstOrDefault(p => p.TreatmentId == id);
+
+                if (treatment != null)
+                {
+                    return treatment;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
         public async Task<Treatment> AddTreatmentAsync(AddTreatmentRequest addTreatmentRequest)
         {
             var treatment = new Treatment()

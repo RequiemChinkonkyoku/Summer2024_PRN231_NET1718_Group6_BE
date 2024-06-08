@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models;
 using Models.DTOs;
@@ -75,8 +76,10 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpPost("add-patient")]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> AddPatient([FromBody] AddPatientRequest addPatientRequest)
         {
+
             var _newPatient = await _patientService.AddPatientAsync(addPatientRequest, 1);
             return Ok(_newPatient);
         }
