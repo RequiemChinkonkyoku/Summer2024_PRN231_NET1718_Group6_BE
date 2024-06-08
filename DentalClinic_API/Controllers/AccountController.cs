@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models;
@@ -43,6 +44,19 @@ namespace DentalClinic_API.Controllers
             }
 
             return Ok(new { Token = token });
+        }
+
+        [HttpPost("get-value-from-token")]
+        public async Task<IActionResult> GetValueFromToken([FromBody] TokenRequest tokenRequest)
+        {
+            var result = await _accountService.GetValueFromToken(tokenRequest.Token, tokenRequest.ClaimType);
+
+            if (result == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(result);
         }
     }
 }

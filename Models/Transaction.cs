@@ -9,7 +9,7 @@ public partial class Transaction
 
     public int? Price { get; set; }
 
-    public TimeSpan? TransactionTime { get; set; }
+    public DateTime? TransactionTime { get; set; }
 
     public int? Status { get; set; }
 

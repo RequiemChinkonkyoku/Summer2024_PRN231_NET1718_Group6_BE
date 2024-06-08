@@ -12,5 +12,11 @@ namespace Services.Interface
         Task<string> CustomerLogin(string email, string password);
 
         Task<string> DentistLogin(string email, string password);
+
+        Task<string> GetValueFromToken(string token, string claimType);
+
+        //Task BlacklistToken(string token);
+
+        //Task<bool> CheckTokenBlacklisted(string token);
     }
 }
