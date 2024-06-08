@@ -20,17 +20,21 @@ namespace Services.Implement
     {
         private readonly IRepositoryBase<Customer> _customerRepo;
         private readonly IRepositoryBase<Dentist> _dentistRepo;
+        private readonly IRepositoryBase<BlacklistedToken> _blacklistedTokenRepo;
 
-        public AccountService(IRepositoryBase<Customer> customerRepo, IRepositoryBase<Dentist> dentistRepo)
+        public AccountService(IRepositoryBase<Customer> customerRepo, IRepositoryBase<Dentist> dentistRepo, IRepositoryBase<BlacklistedToken> blacklistedTokenRepo)
         {
             _customerRepo = customerRepo;
             _dentistRepo = dentistRepo;
+            _blacklistedTokenRepo = blacklistedTokenRepo;
         }
 
         public async Task<string> CustomerLogin(string email, string password)
         {
+            var customer = CustomerValidate(email, password).Result;
+
             // Validate user credentials
-            if (CustomerValidate(email, password).Result)
+            if (customer != null)
             {
                 // Generate JWT token
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -44,7 +48,7 @@ namespace Services.Implement
                 {
                     Subject = new ClaimsIdentity(new[]
                     {
-                    new Claim(ClaimTypes.NameIdentifier, email),
+                    new Claim(ClaimTypes.NameIdentifier, customer.CustomerId.ToString()),
                     new Claim(ClaimTypes.Email, email),
                     new Claim(ClaimTypes.Role, "Customer")
                 }),
@@ -61,9 +65,8 @@ namespace Services.Implement
             return null;
         }
 
-        private async Task<bool> CustomerValidate(string email, string password)
+        private async Task<Customer> CustomerValidate(string email, string password)
         {
-            var result = false;
             var customers = await _customerRepo.GetAllAsync();
             if (!customers.IsNullOrEmpty())
             {
@@ -71,16 +74,18 @@ namespace Services.Implement
                                                              && x.Password.Equals(password));
                 if (customer != null)
                 {
-                    result = true;
+                    return customer;
                 }
             }
-            return result;
+            return null;
         }
 
         public async Task<string> DentistLogin(string email, string password)
         {
+            var dentist = DentistValidate(email, password).Result;
+
             // Validate user credentials
-            if (DentistValidate(email, password).Result)
+            if (dentist != null)
             {
                 // Generate JWT token
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -94,9 +99,9 @@ namespace Services.Implement
                 {
                     Subject = new ClaimsIdentity(new[]
                     {
-                    new Claim(ClaimTypes.NameIdentifier, email),
-                    new Claim(ClaimTypes.Email, email),
-                    new Claim(ClaimTypes.Role, "Dentist")
+                        new Claim(ClaimTypes.NameIdentifier, dentist.DentistId.ToString()),
+                        new Claim(ClaimTypes.Email, email),
+                        new Claim(ClaimTypes.Role, "Dentist")
                 }),
                     Expires = DateTime.UtcNow.AddMinutes(15),
                     Issuer = config["Jwt:Issuer"],
@@ -112,9 +117,8 @@ namespace Services.Implement
         }
 
 
-        private async Task<bool> DentistValidate(string email, string password)
+        private async Task<Dentist> DentistValidate(string email, string password)
         {
-            bool result = false;
             var dentists = await _dentistRepo.GetAllAsync();
             if (!dentists.IsNullOrEmpty())
             {
@@ -122,10 +126,71 @@ namespace Services.Implement
                                                       && x.Password.Equals(password));
                 if (!(dentist == null))
                 {
-                    result = true;
+                    return dentist;
                 }
             }
-            return result;
+            return null;
         }
+
+        public async Task<string> GetValueFromToken(string token, string claimType)
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+
+                if (handler.CanReadToken(token))
+                {
+                    var jwtToken = handler.ReadJwtToken(token);
+                    var claim = jwtToken.Claims.FirstOrDefault(c => c.Type.Equals(claimType, StringComparison.OrdinalIgnoreCase));
+                    if (claim != null)
+                    {
+                        return claim.Value;
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception while extracting claim from JWT: {ex.Message}");
+                return null;
+            }
+        }
+
+        //public async Task BlacklistToken(string token)
+        //{
+        //    try
+        //    {
+        //        var handler = new JwtSecurityTokenHandler();
+
+        //        if (handler.CanReadToken(token))
+        //        {
+        //            var jwtToken = handler.ReadJwtToken(token);
+
+        //            //blacklist code
+        //            BlacklistedToken _token = new BlacklistedToken();
+        //            _token.TokenString = token;
+        //            _token.BlacklistTime = DateTime.UtcNow;
+        //            await _blacklistedTokenRepo.AddAsync(_token);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Exception while extracting claim from JWT: {ex.Message}");
+        //    }
+        //}
+
+        //public async Task<bool> CheckTokenBlacklisted(string token)
+        //{
+        //    bool result = false;
+        //    var blacklistedTokenList = await _blacklistedTokenRepo.GetAllAsync();
+        //    var _token = blacklistedTokenList.FirstOrDefault(t => t.TokenString.Equals(token));
+
+        //    if (_token != null)
+        //    {
+        //        result = true;
+        //    }
+
+        //    return result;
+        //}
     }
 }

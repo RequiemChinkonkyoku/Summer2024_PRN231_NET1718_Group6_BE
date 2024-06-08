@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Models;
 
@@ -19,6 +18,8 @@ public partial class DentalClinicDbContext : DbContext
     public virtual DbSet<Appointment> Appointments { get; set; }
 
     public virtual DbSet<AppointmentDetail> AppointmentDetails { get; set; }
+
+    public virtual DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
 
     public virtual DbSet<Customer> Customers { get; set; }
 
@@ -38,25 +39,13 @@ public partial class DentalClinicDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer(GetConnectionString());
-
-
-    private string GetConnectionString()
-    {
-        IConfiguration config = new ConfigurationBuilder()
-         .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", true, true)
-        .Build();
-        var strConn = config["ConnectionStrings:DentalClinicDB"];
-
-        return strConn;
-    }
+        => optionsBuilder.UseSqlServer("server=(local); database=DentalClinicDB; uid=sa; pwd=12345; TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Appointment>(entity =>
         {
-            entity.HasKey(e => e.AppointmentId).HasName("PK__appointm__D067651E6821671C");
+            entity.HasKey(e => e.AppointmentId).HasName("PK__appointm__D067651E0959AC73");
 
             entity.ToTable("appointment");
 
@@ -77,16 +66,16 @@ public partial class DentalClinicDbContext : DbContext
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Appointments)
                 .HasForeignKey(d => d.CustomerId)
-                .HasConstraintName("FK__appointme__custo__3C69FB99");
+                .HasConstraintName("FK__appointme__custo__29572725");
 
             entity.HasOne(d => d.Patient).WithMany(p => p.Appointments)
                 .HasForeignKey(d => d.PatientId)
-                .HasConstraintName("FK__appointme__patie__3D5E1FD2");
+                .HasConstraintName("FK__appointme__patie__2A4B4B5E");
         });
 
         modelBuilder.Entity<AppointmentDetail>(entity =>
         {
-            entity.HasKey(e => e.AppointmentDetailId).HasName("PK__appointm__B5CE973CA1B9E610");
+            entity.HasKey(e => e.AppointmentDetailId).HasName("PK__appointm__B5CE973CA2F36049");
 
             entity.ToTable("appointmentDetails");
 
@@ -98,24 +87,39 @@ public partial class DentalClinicDbContext : DbContext
 
             entity.HasOne(d => d.Appointment).WithMany(p => p.AppointmentDetails)
                 .HasForeignKey(d => d.AppointmentId)
-                .HasConstraintName("FK__appointme__appoi__52593CB8");
+                .HasConstraintName("FK__appointme__appoi__3F466844");
 
             entity.HasOne(d => d.Dentist).WithMany(p => p.AppointmentDetails)
                 .HasForeignKey(d => d.DentistId)
-                .HasConstraintName("FK__appointme__denti__5441852A");
+                .HasConstraintName("FK__appointme__denti__412EB0B6");
 
             entity.HasOne(d => d.Schedule).WithMany(p => p.AppointmentDetails)
                 .HasForeignKey(d => d.ScheduleId)
-                .HasConstraintName("FK__appointme__sched__5535A963");
+                .HasConstraintName("FK__appointme__sched__4222D4EF");
 
             entity.HasOne(d => d.Treatment).WithMany(p => p.AppointmentDetails)
                 .HasForeignKey(d => d.TreatmentId)
-                .HasConstraintName("FK__appointme__treat__534D60F1");
+                .HasConstraintName("FK__appointme__treat__403A8C7D");
+        });
+
+        modelBuilder.Entity<BlacklistedToken>(entity =>
+        {
+            entity.HasKey(e => e.TokenId).HasName("PK__blacklis__AC16DAA741F26453");
+
+            entity.ToTable("blacklistedTokens");
+
+            entity.Property(e => e.TokenId).HasColumnName("tokenID");
+            entity.Property(e => e.BlacklistTime)
+                .HasColumnType("datetime")
+                .HasColumnName("blacklistTime");
+            entity.Property(e => e.TokenString)
+                .HasMaxLength(255)
+                .HasColumnName("tokenString");
         });
 
         modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.CustomerId).HasName("PK__customer__B611CB9D93B974C7");
+            entity.HasKey(e => e.CustomerId).HasName("PK__customer__B611CB9DFC9CEA41");
 
             entity.ToTable("customer");
 
@@ -133,7 +137,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Dentist>(entity =>
         {
-            entity.HasKey(e => e.DentistId).HasName("PK__dentist__381604984669AA19");
+            entity.HasKey(e => e.DentistId).HasName("PK__dentist__38160498B2B75CF4");
 
             entity.ToTable("dentist");
 
@@ -160,7 +164,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<MedicalRecord>(entity =>
         {
-            entity.HasKey(e => e.RecordId).HasName("PK__medicalR__D825197E7E12116B");
+            entity.HasKey(e => e.RecordId).HasName("PK__medicalR__D825197E73CD0B29");
 
             entity.ToTable("medicalRecord");
 
@@ -179,16 +183,16 @@ public partial class DentalClinicDbContext : DbContext
 
             entity.HasOne(d => d.Appointment).WithMany(p => p.MedicalRecords)
                 .HasForeignKey(d => d.AppointmentId)
-                .HasConstraintName("FK__medicalRe__appoi__412EB0B6");
+                .HasConstraintName("FK__medicalRe__appoi__2E1BDC42");
 
             entity.HasOne(d => d.Patient).WithMany(p => p.MedicalRecords)
                 .HasForeignKey(d => d.PatientId)
-                .HasConstraintName("FK__medicalRe__patie__403A8C7D");
+                .HasConstraintName("FK__medicalRe__patie__2D27B809");
         });
 
         modelBuilder.Entity<Patient>(entity =>
         {
-            entity.HasKey(e => e.PatientId).HasName("PK__patient__A17005CC48B26DDA");
+            entity.HasKey(e => e.PatientId).HasName("PK__patient__A17005CCF7308C26");
 
             entity.ToTable("patient");
 
@@ -208,12 +212,12 @@ public partial class DentalClinicDbContext : DbContext
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Patients)
                 .HasForeignKey(d => d.CustomerId)
-                .HasConstraintName("FK__patient__custome__398D8EEE");
+                .HasConstraintName("FK__patient__custome__267ABA7A");
         });
 
         modelBuilder.Entity<Profession>(entity =>
         {
-            entity.HasKey(e => e.ProfessionId).HasName("PK__professi__2FE388033ADB09F8");
+            entity.HasKey(e => e.ProfessionId).HasName("PK__professi__2FE38803F780B0D8");
 
             entity.ToTable("profession");
 
@@ -223,16 +227,16 @@ public partial class DentalClinicDbContext : DbContext
 
             entity.HasOne(d => d.Dentist).WithMany(p => p.Professions)
                 .HasForeignKey(d => d.DentistId)
-                .HasConstraintName("FK__professio__denti__4BAC3F29");
+                .HasConstraintName("FK__professio__denti__38996AB5");
 
             entity.HasOne(d => d.Treatment).WithMany(p => p.Professions)
                 .HasForeignKey(d => d.TreatmentId)
-                .HasConstraintName("FK__professio__treat__4CA06362");
+                .HasConstraintName("FK__professio__treat__398D8EEE");
         });
 
         modelBuilder.Entity<Schedule>(entity =>
         {
-            entity.HasKey(e => e.ScheduleId).HasName("PK__schedule__A532EDB436F67C4F");
+            entity.HasKey(e => e.ScheduleId).HasName("PK__schedule__A532EDB4F30917E3");
 
             entity.ToTable("schedule");
 
@@ -246,12 +250,12 @@ public partial class DentalClinicDbContext : DbContext
 
             entity.HasOne(d => d.Dentist).WithMany(p => p.Schedules)
                 .HasForeignKey(d => d.DentistId)
-                .HasConstraintName("FK__schedule__dentis__4F7CD00D");
+                .HasConstraintName("FK__schedule__dentis__3C69FB99");
         });
 
         modelBuilder.Entity<Transaction>(entity =>
         {
-            entity.HasKey(e => e.TransactionId).HasName("PK__transact__9B57CF528D0E69C6");
+            entity.HasKey(e => e.TransactionId).HasName("PK__transact__9B57CF524976FE67");
 
             entity.ToTable("transaction");
 
@@ -260,20 +264,22 @@ public partial class DentalClinicDbContext : DbContext
             entity.Property(e => e.CustomerId).HasColumnName("customerID");
             entity.Property(e => e.Price).HasColumnName("price");
             entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.TransactionTime).HasColumnName("transactionTime");
+            entity.Property(e => e.TransactionTime)
+                .HasColumnType("datetime")
+                .HasColumnName("transactionTime");
 
             entity.HasOne(d => d.Appointment).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.AppointmentId)
-                .HasConstraintName("FK__transacti__appoi__44FF419A");
+                .HasConstraintName("FK__transacti__appoi__31EC6D26");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.CustomerId)
-                .HasConstraintName("FK__transacti__custo__440B1D61");
+                .HasConstraintName("FK__transacti__custo__30F848ED");
         });
 
         modelBuilder.Entity<Treatment>(entity =>
         {
-            entity.HasKey(e => e.TreatmentId).HasName("PK__treatmen__D7AA588899941EEC");
+            entity.HasKey(e => e.TreatmentId).HasName("PK__treatmen__D7AA588854B4BCAD");
 
             entity.ToTable("treatment");
 

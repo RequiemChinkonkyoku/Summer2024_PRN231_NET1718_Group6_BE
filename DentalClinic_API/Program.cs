@@ -20,6 +20,25 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddScoped<IRepositoryBase<Appointment>, AppointmentRepository>();
+builder.Services.AddScoped<IRepositoryBase<AppointmentDetail>, AppointmentDetailRepository>();
+builder.Services.AddScoped<IRepositoryBase<Dentist>, DentistRepository>();
+builder.Services.AddScoped<IRepositoryBase<Profession>, ProfessionRepository>();
+builder.Services.AddScoped<IRepositoryBase<MedicalRecord>, MedicalRecordRepository>();
+builder.Services.AddScoped<IRepositoryBase<Customer>, CustomerRepository>();
+builder.Services.AddScoped<IRepositoryBase<Patient>, PatientRepository>();
+builder.Services.AddScoped<IRepositoryBase<Schedule>, ScheduleRepository>();
+builder.Services.AddScoped<IRepositoryBase<Treatment>, TreatmentRepository>();
+builder.Services.AddScoped<IRepositoryBase<Models.Transaction>, TransactionRepository>();
+builder.Services.AddScoped<IRepositoryBase<BlacklistedToken>, BlacklistedTokenRepository>();
+
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IDentistService, DentistService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IAppointmentDetailService, AppointmentDetailService>();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -91,24 +110,6 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("DentistAuth",
         policy => policy.RequireClaim(ClaimTypes.Role, "Dentist"));
 });
-
-builder.Services.AddScoped<IRepositoryBase<Appointment>, AppointmentRepository>();
-builder.Services.AddScoped<IRepositoryBase<AppointmentDetail>, AppointmentDetailRepository>();
-builder.Services.AddScoped<IRepositoryBase<Dentist>, DentistRepository>();
-builder.Services.AddScoped<IRepositoryBase<Profession>, ProfessionRepository>();
-builder.Services.AddScoped<IRepositoryBase<MedicalRecord>, MedicalRecordRepository>();
-builder.Services.AddScoped<IRepositoryBase<Customer>, CustomerRepository>();
-builder.Services.AddScoped<IRepositoryBase<Patient>, PatientRepository>();
-builder.Services.AddScoped<IRepositoryBase<Schedule>, ScheduleRepository>();
-builder.Services.AddScoped<IRepositoryBase<Treatment>, TreatmentRepository>();
-builder.Services.AddScoped<IRepositoryBase<Models.Transaction>, TransactionRepository>();
-
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IPatientService, PatientService>();
-builder.Services.AddScoped<IDentistService, DentistService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-builder.Services.AddScoped<IAppointmentDetailService, AppointmentDetailService>();
 
 builder.Services.AddDistributedMemoryCache();
 
