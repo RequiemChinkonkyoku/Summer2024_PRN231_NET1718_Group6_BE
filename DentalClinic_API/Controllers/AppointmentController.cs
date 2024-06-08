@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Models;
@@ -6,6 +8,8 @@ using Models.DTOs;
 using Repositories.Interface;
 using Services.Interface;
 using System.Net;
+using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace DentalClinic_API.Controllers
 {
@@ -23,38 +27,48 @@ namespace DentalClinic_API.Controllers
         [HttpGet("get-all-appointment")]
         public async Task<ActionResult<List<Appointment>>> GetAllAppointments()
         {
-            //var session = GetSession();
+            int userId = 0;
 
-            //if (session != null)
-            //{
-            return Ok(await _appService.GetAllAppointments());
-            //}
-            //else
-            //{
-            //    return Unauthorized("Unable to get session");
-            //}
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            var appointments = await _appService.GetAllAppointments();
+
+            return Ok(appointments);
         }
 
 
         [HttpGet("get-account-appointment")]
         public async Task<ActionResult<List<Appointment>>> GetAccountAppointments()
         {
-            //var session = GetSession();
+            int userId = 0;
+            string userRole = "";
 
-            //if (session != null)
-            //{
-            string accountType = "Customer";
-            int accountID = 1;
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+                userRole = User.FindFirst(ClaimTypes.Role)?.Value.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
 
             List<Appointment> appointmentList = null;
 
-            if (accountType.Equals("Customer"))
+            if (userRole.Equals("Customer"))
             {
-                appointmentList = await _appService.GetCustomerAppointments(accountID);
+                appointmentList = await _appService.GetCustomerAppointments(userId);
             }
-            else if (accountType.Equals("Dentist"))
+            else if (userRole.Equals("Dentist"))
             {
-                appointmentList = await _appService.GetDentistAppointments(accountID);
+                appointmentList = await _appService.GetDentistAppointments(userId);
             }
 
             if (!appointmentList.IsNullOrEmpty())
@@ -66,18 +80,20 @@ namespace DentalClinic_API.Controllers
                 return BadRequest("No appointment found");
             }
         }
-        //else
-        //{
-        //    return Unauthorized("Unable to get session");
-        //}
 
         [HttpDelete("cancel-appointment/{id}")]
         public async Task<IActionResult> CancelAppointment(int id)
         {
-            //var session = GetSession();
+            int userId = 0;
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
 
-            //if (session != null)
-            //{
             var appointment = await _appService.CancelAppointment(id);
 
             if (appointment == null)
@@ -86,29 +102,23 @@ namespace DentalClinic_API.Controllers
             }
 
             return Ok(appointment);
-            //}
-            //else
-            //{
-            //    return Unauthorized("Unable to get session");
-            //}
         }
 
         [HttpPost("create-appointment")]
+        [Authorize(Roles = "Customer")]
         public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] CreateAppointmentRequest request)
         {
-            //var session = GetSession();
-
-            //if (session == null)
-            //{
-            //    return Unauthorized("Unable to get session");
-            //}
-
-            if (request == null)
+            int userId = 0;
+            try
             {
-                return BadRequest("Invalid request");
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
 
-            var response = await _appService.CreateAppointment(request, 1);
+            var response = await _appService.CreateAppointment(request, userId);
 
             if (!response.Success)
             {
@@ -116,24 +126,6 @@ namespace DentalClinic_API.Controllers
             }
 
             return Ok(response.Appointment);
-        }
-
-        private dynamic GetSession()
-        {
-            var _session = HttpContext.Session;
-
-            if (_session.IsAvailable)
-            {
-                var accountType = _session.GetString("AccountType");
-                var accountID = _session.GetInt32("AccountID");
-
-                if (accountType != null && accountID.HasValue)
-                {
-                    return new { accountType, accountID };
-                }
-            }
-
-            return null;
         }
     }
 }

@@ -4,6 +4,7 @@ using Models;
 using Models.DTOs;
 using Services.Implement;
 using Services.Interface;
+using System.Security.Claims;
 
 namespace DentalClinic_API.Controllers
 {
@@ -30,6 +31,33 @@ namespace DentalClinic_API.Controllers
         public async Task<ActionResult<Dentist>> GetDentistById(int id)
         {
             var dentist = await _dentistService.GetDentistByID(id);
+
+            if (dentist != null)
+            {
+                return Ok(dentist);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("get-current-dentist")]
+        [Authorize(Roles = "Dentist")]
+        public async Task<IActionResult> GetCurrentDentist()
+        {
+            int userId = 0;
+
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            var dentist = await _dentistService.GetDentistByID(userId);
 
             if (dentist != null)
             {
@@ -84,6 +112,35 @@ namespace DentalClinic_API.Controllers
             }
 
             var updatedDentist = await _dentistService.UpdateDentist(id, updateDentistRequest);
+
+            if (updatedDentist == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedDentist);
+        }
+
+        [HttpPut("update-current-dentist")]
+        public async Task<IActionResult> UpdateCurrentDentist([FromBody] UpdateDentistRequest updateDentistRequest)
+        {
+            int userId = 0;
+
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            if (updateDentistRequest == null)
+            {
+                return BadRequest();
+            }
+
+            var updatedDentist = await _dentistService.UpdateDentist(userId, updateDentistRequest);
 
             if (updatedDentist == null)
             {
