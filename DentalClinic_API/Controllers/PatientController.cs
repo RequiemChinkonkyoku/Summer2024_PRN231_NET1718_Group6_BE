@@ -5,6 +5,7 @@ using Models;
 using Models.DTOs;
 using Services.Implement;
 using Services.Interface;
+using System.Security.Claims;
 
 namespace DentalClinic_API.Controllers
 {
@@ -79,16 +80,62 @@ namespace DentalClinic_API.Controllers
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> AddPatient([FromBody] AddPatientRequest addPatientRequest)
         {
+            int userId = 0;
 
-            var _newPatient = await _patientService.AddPatientAsync(addPatientRequest, 1);
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            var _newPatient = await _patientService.AddPatientAsync(addPatientRequest, userId);
             return Ok(_newPatient);
         }
 
         [HttpPut("update-patient/{id}")]
         public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientRequest updatePatientRequest)
         {
-            var _updatedPatient = await _patientService.UpdatePatientAsync(id, updatePatientRequest, 1);
+            int userId = 0;
+
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            var _updatedPatient = await _patientService.UpdatePatientAsync(id, updatePatientRequest, userId);
             return Ok(_updatedPatient);
+        }
+
+        [HttpGet("get-patient-list-by-customer")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> GetPatientListByCustomer()
+        {
+            int userId = 0;
+
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            var response = await _patientService.GetPatientListByCustomer(userId);
+
+            if (response != null)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

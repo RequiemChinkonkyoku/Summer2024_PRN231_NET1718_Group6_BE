@@ -20,17 +20,20 @@ namespace Services.Implement
     {
         private readonly IRepositoryBase<Customer> _customerRepo;
         private readonly IRepositoryBase<Dentist> _dentistRepo;
-
-        public AccountService(IRepositoryBase<Customer> customerRepo, IRepositoryBase<Dentist> dentistRepo)
+        private readonly IConfiguration _config;
+        public AccountService(IRepositoryBase<Customer> customerRepo, IRepositoryBase<Dentist> dentistRepo, IConfiguration config)
         {
             _customerRepo = customerRepo;
             _dentistRepo = dentistRepo;
+            _config = config;
         }
 
         public async Task<string> CustomerLogin(string email, string password)
         {
+            var customer = CustomerValidate(email, password).Result;
+
             // Validate user credentials
-            if (!(CustomerValidate(email, password) == null))
+            if (customer != null)
             {
                 // Generate JWT token
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -44,7 +47,7 @@ namespace Services.Implement
                 {
                     Subject = new ClaimsIdentity(new[]
                     {
-                    new Claim(ClaimTypes.NameIdentifier, email),
+                    new Claim(ClaimTypes.NameIdentifier, customer.CustomerId.ToString()),
                     new Claim(ClaimTypes.Email, email),
                     new Claim(ClaimTypes.Role, "Customer")
                 }),
@@ -67,7 +70,7 @@ namespace Services.Implement
             if (!customers.IsNullOrEmpty())
             {
                 var customer = customers.FirstOrDefault(x => x.Email.Equals(email)
-                                                      && x.Password.Equals(password));
+                                                             && x.Password.Equals(password));
                 if (customer != null)
                 {
                     return customer;
@@ -78,8 +81,10 @@ namespace Services.Implement
 
         public async Task<string> DentistLogin(string email, string password)
         {
+            var dentist = DentistValidate(email, password).Result;
+
             // Validate user credentials
-            if (!(DentistValidate(email, password) == null))
+            if (dentist != null)
             {
                 // Generate JWT token
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -93,9 +98,9 @@ namespace Services.Implement
                 {
                     Subject = new ClaimsIdentity(new[]
                     {
-                    new Claim(ClaimTypes.NameIdentifier, email),
-                    new Claim(ClaimTypes.Email, email),
-                    new Claim(ClaimTypes.Role, "Dentist")
+                        new Claim(ClaimTypes.NameIdentifier, dentist.DentistId.ToString()),
+                        new Claim(ClaimTypes.Email, email),
+                        new Claim(ClaimTypes.Role, "Dentist")
                 }),
                     Expires = DateTime.UtcNow.AddMinutes(15),
                     Issuer = config["Jwt:Issuer"],
@@ -125,5 +130,143 @@ namespace Services.Implement
             }
             return null;
         }
+
+        public async Task<string> AdminLogin(string email, string password)
+        {
+            var isValidAdmin = await AdminValidate(email, password);
+
+            if (isValidAdmin)
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[]
+                    {
+                        new Claim(ClaimTypes.Role, "Admin")
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(15),
+                    Issuer = _config["Jwt:Issuer"],
+                    Audience = _config["Jwt:Audience"],
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+            }
+
+            return null;
+        }
+
+        private Task<bool> AdminValidate(string email, string password)
+        {
+            var adminEmail = _config["Admin:Email"];
+            var adminPassword = _config["Admin:Password"];
+
+            if (email == adminEmail && password == adminPassword)
+            {
+                return Task.FromResult(true);
+            }
+
+            return Task.FromResult(false);
+        }
+        
+        public async Task<string> ManagerLogin(string email, string password)
+        {
+            var isValidManager = await ManagerValidate(email, password);
+
+            if (isValidManager)
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[]
+                    {
+                        new Claim(ClaimTypes.Role, "Manager")
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(15),
+                    Issuer = _config["Jwt:Issuer"],
+                    Audience = _config["Jwt:Audience"],
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+            }
+
+            return null;
+        }
+
+        private Task<bool> ManagerValidate(string email, string password)
+        {
+            var managerEmail = _config["Manager:Email"];
+            var managerPassword = _config["Manager:Password"];
+
+            if (email == managerEmail && password == managerPassword)
+            {
+                return Task.FromResult(true);
+            }
+
+            return Task.FromResult(false);
+        }
+        public async Task<string> GetValueFromToken(string token, string claimType)
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+
+                if (handler.CanReadToken(token))
+                {
+                    var jwtToken = handler.ReadJwtToken(token);
+                    var claim = jwtToken.Claims.FirstOrDefault(c => c.Type.Equals(claimType, StringComparison.OrdinalIgnoreCase));
+                    if (claim != null)
+                    {
+                        return claim.Value;
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception while extracting claim from JWT: {ex.Message}");
+                return null;
+            }
+        }
+
+        //public async Task BlacklistToken(string token)
+        //{
+        //    try
+        //    {
+        //        var handler = new JwtSecurityTokenHandler();
+
+        //        if (handler.CanReadToken(token))
+        //        {
+        //            var jwtToken = handler.ReadJwtToken(token);
+
+        //            //blacklist code
+        //            BlacklistedToken _token = new BlacklistedToken();
+        //            _token.TokenString = token;
+        //            _token.BlacklistTime = DateTime.UtcNow;
+        //            await _blacklistedTokenRepo.AddAsync(_token);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Exception while extracting claim from JWT: {ex.Message}");
+        //    }
+        //}
+
+        //public async Task<bool> CheckTokenBlacklisted(string token)
+        //{
+        //    bool result = false;
+        //    var blacklistedTokenList = await _blacklistedTokenRepo.GetAllAsync();
+        //    var _token = blacklistedTokenList.FirstOrDefault(t => t.TokenString.Equals(token));
+
+        //    if (_token != null)
+        //    {
+        //        result = true;
+        //    }
+
+        //    return result;
+        //}
     }
 }

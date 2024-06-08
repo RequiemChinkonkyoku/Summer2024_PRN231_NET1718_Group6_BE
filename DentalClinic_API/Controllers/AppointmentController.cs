@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Models;
@@ -6,6 +8,8 @@ using Models.DTOs;
 using Repositories.Interface;
 using Services.Interface;
 using System.Net;
+using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace DentalClinic_API.Controllers
 {
@@ -23,93 +27,98 @@ namespace DentalClinic_API.Controllers
         [HttpGet("get-all-appointment")]
         public async Task<ActionResult<List<Appointment>>> GetAllAppointments()
         {
-            var session = GetSession();
+            int userId = 0;
 
-            if (session != null)
+            try
             {
-                return Ok(await _appService.GetAllAppointments());
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
             }
-            else
+            catch (Exception ex)
             {
-                return Unauthorized("Unable to get session");
+                Console.WriteLine(ex);
             }
+
+            var appointments = await _appService.GetAllAppointments();
+
+            return Ok(appointments);
         }
 
 
         [HttpGet("get-account-appointment")]
         public async Task<ActionResult<List<Appointment>>> GetAccountAppointments()
         {
-            var session = GetSession();
+            int userId = 0;
+            string userRole = "";
 
-            if (session != null)
+            try
             {
-                string accountType = session.accountType;
-                int accountID = session.accountID;
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+                userRole = User.FindFirst(ClaimTypes.Role)?.Value.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
 
-                List<Appointment> appointmentList = null;
+            List<Appointment> appointmentList = null;
 
-                if (accountType.Equals("Customer"))
-                {
-                    appointmentList = await _appService.GetCustomerAppointments(accountID);
-                }
-                else if (accountType.Equals("Dentist"))
-                {
-                    appointmentList = await _appService.GetDentistAppointments(accountID);
-                }
+            if (userRole.Equals("Customer"))
+            {
+                appointmentList = await _appService.GetCustomerAppointments(userId);
+            }
+            else if (userRole.Equals("Dentist"))
+            {
+                appointmentList = await _appService.GetDentistAppointments(userId);
+            }
 
-                if (!appointmentList.IsNullOrEmpty())
-                {
-                    return Ok(appointmentList);
-                }
-                else
-                {
-                    return BadRequest("No appointment found");
-                }
+            if (!appointmentList.IsNullOrEmpty())
+            {
+                return Ok(appointmentList);
             }
             else
             {
-                return Unauthorized("Unable to get session");
+                return BadRequest("No appointment found");
             }
         }
 
         [HttpDelete("cancel-appointment/{id}")]
         public async Task<IActionResult> CancelAppointment(int id)
         {
-            var session = GetSession();
-
-            if (session != null)
+            int userId = 0;
+            try
             {
-                var appointment = await _appService.CancelAppointment(id);
-
-                if (appointment == null)
-                {
-                    return BadRequest("Unable to cancel appointment with ID: " + id);
-                }
-
-                return Ok(appointment);
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
             }
-            else
+            catch (Exception ex)
             {
-                return Unauthorized("Unable to get session");
+                Console.WriteLine(ex);
             }
+
+            var appointment = await _appService.CancelAppointment(id);
+
+            if (appointment == null)
+            {
+                return BadRequest("Unable to cancel appointment with ID: " + id);
+            }
+
+            return Ok(appointment);
         }
 
         [HttpPost("create-appointment")]
+        [Authorize(Roles = "Customer")]
         public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] CreateAppointmentRequest request)
         {
-            var session = GetSession();
-
-            if (session == null)
+            int userId = 0;
+            try
             {
-                return Unauthorized("Unable to get session");
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
 
-            if (request == null)
-            {
-                return BadRequest("Invalid request");
-            }
-
-            var response = await _appService.CreateAppointment(request, session.accountID);
+            var response = await _appService.CreateAppointment(request, userId);
 
             if (!response.Success)
             {
@@ -117,24 +126,6 @@ namespace DentalClinic_API.Controllers
             }
 
             return Ok(response.Appointment);
-        }
-
-        private dynamic GetSession()
-        {
-            var _session = HttpContext.Session;
-
-            if (_session.IsAvailable)
-            {
-                var accountType = _session.GetString("AccountType");
-                var accountID = _session.GetInt32("AccountID");
-
-                if (accountType != null && accountID.HasValue)
-                {
-                    return new { accountType, accountID };
-                }
-            }
-
-            return null;
         }
     }
 }

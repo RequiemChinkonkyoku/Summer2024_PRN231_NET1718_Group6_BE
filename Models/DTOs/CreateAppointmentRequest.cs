@@ -14,8 +14,6 @@ namespace Models.DTOs
 
         public int TimeSlot { get; set; }
 
-        public int BookingPrice { get; set; }
-
         public int ScheduleId { get; set; }
 
         public int TreatmentId { get; set; }

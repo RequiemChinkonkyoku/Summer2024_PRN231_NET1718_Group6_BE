@@ -16,6 +16,7 @@ namespace Services.Interface
         Task<Patient> UpdatePatientAsync(int patientId, UpdatePatientRequest updatePatientRequest, int accountId);
         Task<MedicalRecord> ViewMedicalRecord(int id);
         Task<List<Schedule>> ViewClinicScheduleAsync();
+        Task<List<GetPatientListResponse>> GetPatientListByCustomer(int customerId);
         Task<Patient> DeletePatient(int id);
     }
 }

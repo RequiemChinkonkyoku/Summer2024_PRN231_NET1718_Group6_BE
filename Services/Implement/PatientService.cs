@@ -53,7 +53,7 @@ namespace Services.Implement
             }
         }
 
-        public async Task<Patient> AddPatientAsync(AddPatientRequest addPatientRequest, int accountId)
+        public async Task<Patient> AddPatientAsync(AddPatientRequest addPatientRequest, int customerId)
         {
             var patient = new Patient()
             {
@@ -61,21 +61,21 @@ namespace Services.Implement
                 Age = addPatientRequest.Age,
                 Address = addPatientRequest.Address,
                 Gender = addPatientRequest.Gender,
-                CustomerId = accountId
+                CustomerId = customerId
             };
 
             await _patientRepo.AddAsync(patient);
             return patient;
         }
 
-        public async Task<Patient> UpdatePatientAsync(int patientId, UpdatePatientRequest updatePatientRequest, int accountId)
+        public async Task<Patient> UpdatePatientAsync(int patientId, UpdatePatientRequest updatePatientRequest, int customerId)
         {
             var patient = await _patientRepo.GetAllAsync();
             var updatepatient = patient.FirstOrDefault(d => d.PatientId == patientId);
 
             if (updatepatient != null)
             {
-                if (updatepatient.CustomerId != accountId)
+                if (updatepatient.CustomerId != customerId)
                 {
                     throw new Exception("You do not have permission to update this patient");
                 }
@@ -83,7 +83,7 @@ namespace Services.Implement
                 updatepatient.Age = updatePatientRequest.Age;
                 updatepatient.Address = updatePatientRequest.Address;
                 updatepatient.Gender = updatePatientRequest.Gender;
-                updatepatient.CustomerId = accountId;
+                updatepatient.CustomerId = customerId;
             }
             else return null;
 
@@ -130,6 +130,29 @@ namespace Services.Implement
         public async Task<List<Schedule>> ViewClinicScheduleAsync()
         {
             return await _scheduleRepo.GetAllAsync();
+        }
+
+        public async Task<List<GetPatientListResponse>> GetPatientListByCustomer(int customerId)
+        {
+            var list = await _patientRepo.GetAllAsync();
+            var patientList = list.Where(p => p.CustomerId == customerId);
+            List<GetPatientListResponse> response = new List<GetPatientListResponse>();
+
+            foreach (var patient in patientList)
+            {
+                response.Add(new GetPatientListResponse
+                {
+                    PatientId = patient.PatientId,
+                    Name = patient.Name,
+                });
+            }
+
+            if (response.Any())
+            {
+                return response;
+            }
+
+            return null;
         }
     }
 }
