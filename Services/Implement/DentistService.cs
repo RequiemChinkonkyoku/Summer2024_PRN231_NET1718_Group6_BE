@@ -154,5 +154,34 @@ namespace Services.Implement
                 return null;
             }
         }
+        public async Task<Dentist> UpdateDentistAccount(int id, UpdateDentistAccountRequest updateDentistAccountRequest)
+        {
+            var dentist = await _dentistRepo.GetAllAsync();
+            var updateDentistAccount = dentist.FirstOrDefault(d => d.DentistId == id);
+
+            if (dentist == null)
+            {
+                return null;
+            }
+
+            updateDentistAccount.Email = updateDentistAccountRequest.Email;
+            updateDentistAccount.Password = updateDentistAccountRequest.Password;
+
+            await _dentistRepo.UpdateAsync(updateDentistAccount);
+            return updateDentistAccount;
+        }
+        public async Task<Dentist> DeleteDentistAccount(int id)
+        {
+            var dentist = await _dentistRepo.GetAllAsync();
+            var deleteDentistAccount = dentist.FirstOrDefault(d => d.DentistId == id);
+            if (dentist == null)
+            {
+                return null;
+            }
+
+            deleteDentistAccount.Status = 0;
+            await _dentistRepo.UpdateAsync(deleteDentistAccount);
+            return deleteDentistAccount;
+        }
     }
 }

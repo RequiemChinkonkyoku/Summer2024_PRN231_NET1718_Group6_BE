@@ -137,6 +137,24 @@ namespace DentalClinic_API.Controllers
             return Ok(updatedDentist);
         }
 
+        [HttpPut("update-dentist-account/{id}")]
+        public async Task<IActionResult> UpdateDentistAccount(int id, [FromBody] UpdateDentistAccountRequest updateDentistAccountRequest)
+        {
+            if (updateDentistAccountRequest == null)
+            {
+                return BadRequest();
+            }
+
+            var updatedDentistAccount = await _dentistService.UpdateDentistAccount(id, updateDentistAccountRequest);
+
+            if (updatedDentistAccount == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedDentistAccount);
+        }
+
         [HttpPut("update-current-dentist")]
         public async Task<IActionResult> UpdateCurrentDentist([FromBody] UpdateDentistRequest updateDentistRequest)
         {
@@ -176,6 +194,18 @@ namespace DentalClinic_API.Controllers
             }
 
             return Ok(deletedentist);
+        }
+
+        [HttpDelete("delete-dentist-account/{id}")]
+        public async Task<IActionResult> DeleteDentistAccount(int id)
+        {
+            var deleteDentistAccount = await _dentistService.DeleteDentistAccount(id);
+            if (deleteDentistAccount == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(deleteDentistAccount);
         }
     }
 }
