@@ -100,6 +100,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpPost("add-dentist")]
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
         {
             if (addDentistRequest == null)

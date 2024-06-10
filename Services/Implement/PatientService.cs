@@ -91,6 +91,20 @@ namespace Services.Implement
             return updatepatient;
         }
 
+        public async Task<Patient> DeletePatient(int id)
+        {
+            var dentist = await _patientRepo.GetAllAsync();
+            var deletepatient = dentist.FirstOrDefault(d => d.PatientId == id);
+            if (dentist == null)
+            {
+                return null;
+            }
+
+            deletepatient.Status = 0;
+            await _patientRepo.UpdateAsync(deletepatient);
+            return deletepatient;
+        }
+
         public async Task<MedicalRecord> ViewMedicalRecord(int id)
         {
             var medicalrecords = await _medicalRecordRepo.GetAllAsync();
@@ -113,18 +127,28 @@ namespace Services.Implement
             }
         }
 
-        public async Task<List<GetPatientListResponse>> GetPatientListByCustomer(int customerId)
+        public async Task<List<Schedule>> ViewClinicScheduleAsync()
+        {
+            return await _scheduleRepo.GetAllAsync();
+        }
+
+        public async Task<List<Patient>> GetPatientListByCustomer(int customerId)
         {
             var list = await _patientRepo.GetAllAsync();
             var patientList = list.Where(p => p.CustomerId == customerId);
-            List<GetPatientListResponse> response = new List<GetPatientListResponse>();
+            List<Patient> response = new List<Patient>();
 
             foreach (var patient in patientList)
             {
-                response.Add(new GetPatientListResponse
+                response.Add(new Patient
                 {
                     PatientId = patient.PatientId,
                     Name = patient.Name,
+                    Age = patient.Age,
+                    Gender = patient.Gender,
+                    Status = patient.Status,
+                    Address = patient.Address,
+                    CustomerId = patient.CustomerId,
                 });
             }
 

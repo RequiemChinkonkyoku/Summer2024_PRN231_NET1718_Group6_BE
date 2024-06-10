@@ -20,7 +20,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpGet("get-all-customers")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer, Admin")]
         public async Task<ActionResult<List<Account>>> GetAllCustomers()
         {
             var customers = await _customerService.GetAllCustomersAsync();
