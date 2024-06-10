@@ -42,8 +42,20 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpGet("get-medical-record-by-id/{id}")]
-        public async Task<ActionResult<MedicalRecord>> ViewMedicalRecordById(int id)
+        [HttpDelete("delete-patient/{id}")]
+        public async Task<IActionResult> DeleteDentist(int id)
+        {
+            var deletepatient = await _patientService.DeletePatient(id);
+            if (deletepatient == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(deletepatient);
+        }
+
+        [HttpGet("get-medical-record/{id}")]
+        public async Task<ActionResult<MedicalRecord>> ViewMedicalRecord(int id)
         {
             var medicalrecord = await _patientService.ViewMedicalRecord(id);
 
@@ -65,6 +77,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpPost("add-patient")]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> AddPatient([FromBody] AddPatientRequest addPatientRequest)
         {
             int userId = 0;
@@ -82,7 +95,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpPut("update-patient/{id}")]
-        public async Task<IActionResult> UpdatePatient(int patientId, [FromBody] UpdatePatientRequest updatePatientRequest)
+        public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientRequest updatePatientRequest)
         {
             int userId = 0;
 
@@ -94,7 +107,7 @@ namespace DentalClinic_API.Controllers
             {
                 Console.WriteLine(ex);
             }
-            var _updatedPatient = await _patientService.UpdatePatientAsync(patientId, updatePatientRequest, userId);
+            var _updatedPatient = await _patientService.UpdatePatientAsync(id, updatePatientRequest, userId);
             return Ok(_updatedPatient);
         }
 

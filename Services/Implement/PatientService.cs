@@ -91,6 +91,20 @@ namespace Services.Implement
             return updatepatient;
         }
 
+        public async Task<Patient> DeletePatient(int id)
+        {
+            var dentist = await _patientRepo.GetAllAsync();
+            var deletepatient = dentist.FirstOrDefault(d => d.PatientId == id);
+            if (dentist == null)
+            {
+                return null;
+            }
+
+            deletepatient.Status = 0;
+            await _patientRepo.UpdateAsync(deletepatient);
+            return deletepatient;
+        }
+
         public async Task<MedicalRecord> ViewMedicalRecord(int id)
         {
             var medicalrecords = await _medicalRecordRepo.GetAllAsync();

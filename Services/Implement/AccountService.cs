@@ -20,11 +20,12 @@ namespace Services.Implement
     {
         private readonly IRepositoryBase<Customer> _customerRepo;
         private readonly IRepositoryBase<Dentist> _dentistRepo;
-
-        public AccountService(IRepositoryBase<Customer> customerRepo, IRepositoryBase<Dentist> dentistRepo)
+        private readonly IConfiguration _config;
+        public AccountService(IRepositoryBase<Customer> customerRepo, IRepositoryBase<Dentist> dentistRepo, IConfiguration config)
         {
             _customerRepo = customerRepo;
             _dentistRepo = dentistRepo;
+            _config = config;
         }
 
         public async Task<string> CustomerLogin(string email, string password)
@@ -130,6 +131,83 @@ namespace Services.Implement
             return null;
         }
 
+        public async Task<string> AdminLogin(string email, string password)
+        {
+            var isValidAdmin = await AdminValidate(email, password);
+
+            if (isValidAdmin)
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[]
+                    {
+                        new Claim(ClaimTypes.Role, "Admin")
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(15),
+                    Issuer = _config["Jwt:Issuer"],
+                    Audience = _config["Jwt:Audience"],
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+            }
+
+            return null;
+        }
+
+        private Task<bool> AdminValidate(string email, string password)
+        {
+            var adminEmail = _config["Admin:Email"];
+            var adminPassword = _config["Admin:Password"];
+
+            if (email == adminEmail && password == adminPassword)
+            {
+                return Task.FromResult(true);
+            }
+
+            return Task.FromResult(false);
+        }
+        
+        public async Task<string> ManagerLogin(string email, string password)
+        {
+            var isValidManager = await ManagerValidate(email, password);
+
+            if (isValidManager)
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[]
+                    {
+                        new Claim(ClaimTypes.Role, "Manager")
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(15),
+                    Issuer = _config["Jwt:Issuer"],
+                    Audience = _config["Jwt:Audience"],
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+            }
+
+            return null;
+        }
+
+        private Task<bool> ManagerValidate(string email, string password)
+        {
+            var managerEmail = _config["Manager:Email"];
+            var managerPassword = _config["Manager:Password"];
+
+            if (email == managerEmail && password == managerPassword)
+            {
+                return Task.FromResult(true);
+            }
+
+            return Task.FromResult(false);
+        }
         public async Task<string> GetValueFromToken(string token, string claimType)
         {
             try

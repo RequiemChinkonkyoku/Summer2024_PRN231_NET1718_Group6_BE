@@ -46,6 +46,32 @@ namespace DentalClinic_API.Controllers
             return Ok(new { Token = token });
         }
 
+        [HttpPost("admin-login")]
+        public async Task<IActionResult> AdminLogin([FromBody] LoginRequest loginRequest)
+        {
+            var token = await _accountService.AdminLogin(loginRequest.Email, loginRequest.Password);
+
+            if (token == null)
+            {
+                return Unauthorized("Invalid credentials");
+            }
+
+            return Ok(new { Token = token });
+        }
+
+        [HttpPost("manager-login")]
+        public async Task<IActionResult> ManagerLogin([FromBody] LoginRequest loginRequest)
+        {
+            var token = await _accountService.ManagerLogin(loginRequest.Email, loginRequest.Password);
+
+            if (token == null)
+            {
+                return Unauthorized("Invalid credentials");
+            }
+
+            return Ok(new { Token = token });
+        }
+
         [HttpPost("get-value-from-token")]
         public async Task<IActionResult> GetValueFromToken([FromBody] TokenRequest tokenRequest)
         {
