@@ -37,6 +37,7 @@ builder.Services.AddScoped<IDentistService, DentistService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAppointmentDetailService, AppointmentDetailService>();
+builder.Services.AddScoped <IScheduleService, ScheduleService>();
 
 builder.Services.AddSwaggerGen(c =>
 {

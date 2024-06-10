@@ -113,11 +113,6 @@ namespace Services.Implement
             }
         }
 
-        public async Task<List<Schedule>> ViewClinicScheduleAsync()
-        {
-            return await _scheduleRepo.GetAllAsync();
-        }
-
         public async Task<List<GetPatientListResponse>> GetPatientListByCustomer(int customerId)
         {
             var list = await _patientRepo.GetAllAsync();
