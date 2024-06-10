@@ -118,18 +118,23 @@ namespace Services.Implement
             return await _scheduleRepo.GetAllAsync();
         }
 
-        public async Task<List<GetPatientListResponse>> GetPatientListByCustomer(int customerId)
+        public async Task<List<Patient>> GetPatientListByCustomer(int customerId)
         {
             var list = await _patientRepo.GetAllAsync();
             var patientList = list.Where(p => p.CustomerId == customerId);
-            List<GetPatientListResponse> response = new List<GetPatientListResponse>();
+            List<Patient> response = new List<Patient>();
 
             foreach (var patient in patientList)
             {
-                response.Add(new GetPatientListResponse
+                response.Add(new Patient
                 {
                     PatientId = patient.PatientId,
                     Name = patient.Name,
+                    Age = patient.Age,
+                    Gender = patient.Gender,
+                    Status = patient.Status,
+                    Address = patient.Address,
+                    CustomerId = patient.CustomerId,
                 });
             }
 
