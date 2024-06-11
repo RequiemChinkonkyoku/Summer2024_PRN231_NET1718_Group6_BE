@@ -19,11 +19,15 @@ namespace Services.Implement
     {
         private readonly IRepositoryBase<Dentist> _dentistRepo;
         private readonly IRepositoryBase<Schedule> _scheduleRepo;
+        private readonly IRepositoryBase<Profession> _professionRepo;
+        private readonly IRepositoryBase<Treatment> _treatmentRepo;
 
-        public DentistService(IRepositoryBase<Dentist> dentistRepository, IRepositoryBase<Schedule> scheduleRepository)
+        public DentistService(IRepositoryBase<Dentist> dentistRepository, IRepositoryBase<Schedule> scheduleRepository, IRepositoryBase<Profession> professionRepo, IRepositoryBase<Treatment> treatmentRepo)
         {
             _dentistRepo = dentistRepository;
             _scheduleRepo = scheduleRepository;
+            _professionRepo = professionRepo;
+            _treatmentRepo = treatmentRepo;
         }
 
         public async Task<List<Dentist>> GetAllDentistAsync()
@@ -124,5 +128,60 @@ namespace Services.Implement
             }
         }
 
+        public async Task<List<ProfessionDetail>> ViewProfession(int id) 
+        {
+            var professions = await _professionRepo.GetAllAsync();
+            if (!professions.IsNullOrEmpty()) 
+            {
+                var result = from p in professions
+                             join d in await _dentistRepo.GetAllAsync() on p.DentistId equals d.DentistId
+                             join t in await _treatmentRepo.GetAllAsync() on p.TreatmentId equals t.TreatmentId
+                             where d.DentistId == id
+                             select new ProfessionDetail
+                             { 
+                                ProfessionId = p.ProfessionId,
+                                DentistId = d.DentistId,
+                                DentistName = d.Name,
+                                DentistEmail = d.Email,
+                                TreatmentName = t.Name,
+                                TreatmentDescription = t.Description,
+                                TreatmentPrice = t.Price
+                             };
+                return result.ToList();
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public async Task<Dentist> UpdateDentistAccount(int id, UpdateDentistAccountRequest updateDentistAccountRequest)
+        {
+            var dentist = await _dentistRepo.GetAllAsync();
+            var updateDentistAccount = dentist.FirstOrDefault(d => d.DentistId == id);
+
+            if (dentist == null)
+            {
+                return null;
+            }
+
+            updateDentistAccount.Email = updateDentistAccountRequest.Email;
+            updateDentistAccount.Password = updateDentistAccountRequest.Password;
+
+            await _dentistRepo.UpdateAsync(updateDentistAccount);
+            return updateDentistAccount;
+        }
+        public async Task<Dentist> DeleteDentistAccount(int id)
+        {
+            var dentist = await _dentistRepo.GetAllAsync();
+            var deleteDentistAccount = dentist.FirstOrDefault(d => d.DentistId == id);
+            if (dentist == null)
+            {
+                return null;
+            }
+
+            deleteDentistAccount.Status = 0;
+            await _dentistRepo.UpdateAsync(deleteDentistAccount);
+            return deleteDentistAccount;
+        }
     }
 }

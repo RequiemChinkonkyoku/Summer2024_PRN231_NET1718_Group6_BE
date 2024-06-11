@@ -84,6 +84,21 @@ namespace DentalClinic_API.Controllers
             }
         }
 
+        [HttpGet("view-dentist-profession/{id}")]
+        public async Task<ActionResult<ProfessionDetail>> ViewProfession(int id)
+        {
+            var profession = await _dentistService.ViewProfession(id);
+
+            if (profession != null)
+            {
+                return Ok(profession);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         [HttpPost("add-dentist")]
         [Authorize(Roles = "Manager")]
         public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
@@ -120,6 +135,24 @@ namespace DentalClinic_API.Controllers
             }
 
             return Ok(updatedDentist);
+        }
+
+        [HttpPut("update-dentist-account/{id}")]
+        public async Task<IActionResult> UpdateDentistAccount(int id, [FromBody] UpdateDentistAccountRequest updateDentistAccountRequest)
+        {
+            if (updateDentistAccountRequest == null)
+            {
+                return BadRequest();
+            }
+
+            var updatedDentistAccount = await _dentistService.UpdateDentistAccount(id, updateDentistAccountRequest);
+
+            if (updatedDentistAccount == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedDentistAccount);
         }
 
         [HttpPut("update-current-dentist")]
@@ -161,6 +194,18 @@ namespace DentalClinic_API.Controllers
             }
 
             return Ok(deletedentist);
+        }
+
+        [HttpDelete("delete-dentist-account/{id}")]
+        public async Task<IActionResult> DeleteDentistAccount(int id)
+        {
+            var deleteDentistAccount = await _dentistService.DeleteDentistAccount(id);
+            if (deleteDentistAccount == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(deleteDentistAccount);
         }
     }
 }

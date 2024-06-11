@@ -22,5 +22,9 @@ namespace Services.Implement
         {
             return await _scheduleRepo.GetAllAsync();
         }
+        public async Task<List<Schedule>> ViewClinicScheduleAsync()
+        {
+            return await _scheduleRepo.GetAllAsync();
+        }
     }
 }

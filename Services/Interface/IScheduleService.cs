@@ -10,5 +10,6 @@ namespace Services.Interface
     public interface IScheduleService
     {
         Task<List<Schedule>> GetAllSchedules();
+        Task<List<Schedule>> ViewClinicScheduleAsync();
     }
 }
