@@ -15,5 +15,6 @@ namespace Services.Interface
         Task<List<Appointment>> GetAllAppointments();
         Task<List<Appointment>> GetCustomerAppointments(int accountID);
         Task<List<Appointment>> GetDentistAppointments(int dentistID);
+        Task<List<Appointment>> GetCurrentAppointmentList(int id);
     }
 }

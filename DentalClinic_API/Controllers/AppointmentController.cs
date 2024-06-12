@@ -127,5 +127,24 @@ namespace DentalClinic_API.Controllers
 
             return Ok(response.Appointment);
         }
+
+        [HttpPost("get-current-appointment-list")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> GetCurrentAppointmentList()
+        {
+            int userId = 0;
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            var response = await _appService.GetCurrentAppointmentList(userId);
+
+            return Ok(response);
+        }
     }
 }
