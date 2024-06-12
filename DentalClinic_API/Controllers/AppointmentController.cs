@@ -105,20 +105,22 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpPost("create-appointment")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer, Dentist")]
         public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] CreateAppointmentRequest request)
         {
-            int userId = 0;
+            int userID = 0;
+
             try
             {
-                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+                userID = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                return Unauthorized();
             }
 
-            var response = await _appService.CreateAppointment(request, userId);
+            var response = await _appService.CreateAppointment(request, userID);
 
             if (!response.Success)
             {
@@ -126,6 +128,34 @@ namespace DentalClinic_API.Controllers
             }
 
             return Ok(response.Appointment);
+        }
+
+        [HttpPost("update-appointment")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> UpdateAppointment([FromBody] UpdateAppointmentRequest request)
+        {
+            int userID = 0;
+
+            try
+            {
+                userID = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Unauthorized();
+            }
+
+            var response = await _appService.UpdateAppointment(request);
+
+            if (response.Success)
+            {
+                return Ok(response.Appointment);
+            }
+            else
+            {
+                return BadRequest(response.ErrrorMessage);
+            }
         }
     }
 }

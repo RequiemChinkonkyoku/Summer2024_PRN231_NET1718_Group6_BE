@@ -10,10 +10,6 @@ namespace Models.DTOs
     {
         public int PatientId { get; set; }
 
-        public DateTime ArrivalDate { get; set; }
-
-        public int TimeSlot { get; set; }
-
         public int ScheduleId { get; set; }
 
         public int TreatmentId { get; set; }
