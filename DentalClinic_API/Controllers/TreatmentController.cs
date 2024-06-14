@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.DTOs;
 using Services.Implement;
@@ -24,7 +25,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpGet("get-treatment-by-id/{id}")]
-        public async Task<ActionResult<Dentist>> GetDentistById(int id)
+        public async Task<ActionResult<Dentist>> GetTreatmentById(int id)
         {
             var treatment = await _treatmentService.GetTreatmentByID(id);
 
@@ -39,11 +40,12 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpPost("add-treatment")]
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult<Treatment>> AddTreatment([FromBody] AddTreatmentRequest addTreatmentRequest)
         {
-            if (addTreatmentRequest == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var treatment = await _treatmentService.AddTreatmentAsync(addTreatmentRequest);
@@ -58,22 +60,31 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpPut("update-treatment/{id}")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> UpdateTreatment(int id, [FromBody] UpdateTreatmentRequest updateTreatmentRequest)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var updateTreatment = await _treatmentService.UpdateTreatmentAsync(id, updateTreatmentRequest);
+            if (updateTreatment == null)
+            {
+                return NotFound();
+            }
             return Ok(updateTreatment);
         }
 
         [HttpDelete("delete-treatment/{id}")]
-        public async Task<IActionResult> DeleteDentist(int id)
+        public async Task<IActionResult> DeleteTreatment(int id)
         {
-            var deletepatient = await _treatmentService.DeleteTreatmentAsync(id);
-            if (deletepatient == null)
+            var deletetreatment = await _treatmentService.DeleteTreatmentAsync(id);
+            if (deletetreatment == null)
             {
                 return NotFound();
             }
 
-            return Ok(deletepatient);
+            return Ok(deletetreatment);
         }
     }
 }
