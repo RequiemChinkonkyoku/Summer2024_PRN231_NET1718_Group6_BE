@@ -98,5 +98,19 @@ namespace Services.Implement
                 return new CreateScheduleResponse { Success = false, ErrorMessage = $"Error creating schedules: {ex.Message}" };
             }
         }
+
+        public async Task<List<Schedule>> GetScheduleById(int id)
+        {
+            var scheduleList = _scheduleRepo.GetAllAsync().Result.Where(s => s.DentistId == id);
+
+            if (scheduleList.Any())
+            {
+                return scheduleList.ToList();
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }
