@@ -25,7 +25,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpGet("get-all-appointment")]
-        public async Task<ActionResult<List<Appointment>>> GetAllAppointments()
+        public async Task<IActionResult> GetAllAppointments()
         {
             int userId = 0;
 
@@ -40,12 +40,20 @@ namespace DentalClinic_API.Controllers
 
             var appointments = await _appService.GetAllAppointments();
 
-            return Ok(appointments);
+            if (appointments != null)
+            {
+                return Ok(appointments);
+            }
+            else
+            {
+                return BadRequest("There has been an error");
+            }
         }
 
 
-        [HttpGet("get-account-appointment")]
-        public async Task<ActionResult<List<Appointment>>> GetAccountAppointments()
+        [HttpGet("get-account-appointments")]
+        [Authorize(Roles = "Customer, Dentist")]
+        public async Task<IActionResult> GetAccountAppointments()
         {
             int userId = 0;
             string userRole = "";
@@ -70,8 +78,54 @@ namespace DentalClinic_API.Controllers
             {
                 appointmentList = await _appService.GetDentistAppointments(userId);
             }
+            else
+            {
+                return NotFound("You dont have access");
+            }
 
-            if (!appointmentList.IsNullOrEmpty())
+            if (appointmentList != null)
+            {
+                return Ok(appointmentList);
+            }
+            else
+            {
+                return BadRequest("No appointment found");
+            }
+        }
+
+        [HttpPost("get-current-appointment-list")]
+        [Authorize(Roles = "Customer, Dentist")]
+        public async Task<IActionResult> GetCurrentAppointmentList()
+        {
+            int userId = 0;
+            string userRole = "";
+
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+                userRole = User.FindFirst(ClaimTypes.Role)?.Value.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            List<Appointment> appointmentList = null;
+
+            if (userRole.Equals("Customer"))
+            {
+                appointmentList = await _appService.GetCustomerAppointments(userId);
+            }
+            else if (userRole.Equals("Dentist"))
+            {
+                appointmentList = await _appService.GetDentistAppointments(userId);
+            }
+            else
+            {
+                return NotFound("You dont have access");
+            }
+
+            if (appointmentList != null)
             {
                 return Ok(appointmentList);
             }
@@ -106,7 +160,7 @@ namespace DentalClinic_API.Controllers
 
         [HttpPost("create-appointment")]
         [Authorize(Roles = "Customer, Dentist")]
-        public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] CreateAppointmentRequest request)
+        public async Task<IActionResult> CreateAppointment([FromBody] CreateAppointmentRequest request)
         {
             int userID = 0;
 
@@ -155,6 +209,34 @@ namespace DentalClinic_API.Controllers
             else
             {
                 return BadRequest(response.ErrrorMessage);
+            }
+        }
+
+        [HttpGet("get-app-by-id/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetAppointmentById(int id)
+        {
+            int userID = 0;
+
+            try
+            {
+                userID = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Unauthorized();
+            }
+
+            var app = await _appService.GetAppointmentById(id);
+
+            if (app != null)
+            {
+                return Ok(app);
+            }
+            else
+            {
+                return NotFound();
             }
         }
     }

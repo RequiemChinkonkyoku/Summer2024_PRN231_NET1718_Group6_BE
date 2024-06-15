@@ -21,6 +21,7 @@ namespace Services.Implement
         private readonly IRepositoryBase<Dentist> _dentistRepo;
         private readonly IRepositoryBase<Schedule> _scheduleRepo;
         private readonly IRepositoryBase<Profession> _professionRepo;
+        private readonly IRepositoryBase<Customer> _cusRepo;
 
         public AppointmentService(IRepositoryBase<Appointment> appointmentRepo,
                                   IRepositoryBase<AppointmentDetail> appDetailRepo,
@@ -28,7 +29,8 @@ namespace Services.Implement
                                   IRepositoryBase<Patient> patientRepo,
                                   IRepositoryBase<Dentist> dentistRepo,
                                   IRepositoryBase<Profession> professionRepo,
-                                  IRepositoryBase<Schedule> scheduleRepo)
+                                  IRepositoryBase<Schedule> scheduleRepo,
+                                  IRepositoryBase<Customer> cusRepo)
         {
             _appRepo = appointmentRepo;
             _appDetailRepo = appDetailRepo;
@@ -37,6 +39,7 @@ namespace Services.Implement
             _dentistRepo = dentistRepo;
             _professionRepo = professionRepo;
             _scheduleRepo = scheduleRepo;
+            _cusRepo = cusRepo;
         }
 
         public async Task<Appointment> CancelAppointment(int appID)
@@ -164,6 +167,13 @@ namespace Services.Implement
 
             if (!customerAppoinemts.IsNullOrEmpty())
             {
+                foreach (var app in customerAppoinemts)
+                {
+                    var patient = await _patientRepo.FindByIdAsync(app.PatientId.Value);
+
+                    app.Patient = patient;
+                }
+
                 return customerAppoinemts;
             }
 
@@ -180,6 +190,13 @@ namespace Services.Implement
                                        on app.AppointmentId equals detail.AppointmentId
                                        where detail.DentistId == dentistID
                                        select app).ToList();
+
+            foreach (var app in dentistAppointments)
+            {
+                var patient = await _patientRepo.FindByIdAsync(app.PatientId.Value);
+
+                app.Patient = patient;
+            }
 
             return dentistAppointments;
         }
@@ -275,6 +292,33 @@ namespace Services.Implement
             {
                 return new UpdateAppointmentResponse { Success = false, ErrrorMessage = "An error has occured " + ex.Message };
             }
+        }
+
+        public async Task<Appointment> GetAppointmentById(int id)
+        {
+            var app = await _appRepo.FindByIdAsync(id);
+
+            if (app != null)
+            {
+                var cus = await _cusRepo.FindByIdAsync(app.CustomerId.Value);
+                var patient = await _patientRepo.FindByIdAsync(app.PatientId.Value);
+                var appDetails = _appDetailRepo.GetAllAsync().Result.Where(ad => ad.AppointmentId == app.AppointmentId);
+
+                foreach (var appDetail in appDetails)
+                {
+                    var treatmeant = await _treatmentRepo.FindByIdAsync(appDetail.TreatmentId.Value);
+
+                    appDetail.Treatment = treatmeant;
+                }
+
+                app.Customer = cus;
+                app.Patient = patient;
+                app.AppointmentDetails = appDetails.ToList();
+
+                return app;
+            }
+
+            return null;
         }
     }
 }

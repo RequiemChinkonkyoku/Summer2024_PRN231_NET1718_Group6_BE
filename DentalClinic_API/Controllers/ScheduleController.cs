@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.DTOs;
 using Services.Implement;
@@ -32,6 +33,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpPost("create-schedule")]
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult<CreateScheduleResponse>> CreateSchedule([FromBody] CreateScheduleRequest request)
         {
             var response = await _scheduleService.CreateSchedule(request);

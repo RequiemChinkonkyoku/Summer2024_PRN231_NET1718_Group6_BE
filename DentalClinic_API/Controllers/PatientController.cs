@@ -43,7 +43,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpDelete("delete-patient/{id}")]
-        public async Task<IActionResult> DeleteDentist(int id)
+        public async Task<IActionResult> DeletePatient(int id)
         {
             var deletepatient = await _patientService.DeletePatient(id);
             if (deletepatient == null)
@@ -105,7 +105,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpGet("get-patient-list-by-customer")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer, Dentist")]
         public async Task<IActionResult> GetPatientListByCustomer()
         {
             int userId = 0;
