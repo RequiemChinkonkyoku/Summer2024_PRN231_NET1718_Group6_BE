@@ -13,5 +13,6 @@ namespace Services.Interface
         Task<List<Schedule>> GetAllSchedules();
         Task<List<Schedule>> ViewClinicScheduleAsync();
         Task<CreateScheduleResponse> CreateSchedule(CreateScheduleRequest request);
+        Task<List<Schedule>> GetScheduleById(int id);
     }
 }
