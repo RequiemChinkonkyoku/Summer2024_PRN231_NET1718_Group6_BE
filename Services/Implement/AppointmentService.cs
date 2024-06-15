@@ -201,6 +201,30 @@ namespace Services.Implement
             return dentistAppointments;
         }
 
+        public async Task<List<Appointment>> GetCurrentAppointmentList(int id)
+        {
+            var appList = await _appRepo.GetAllAsync();
+            var patList = await _patientRepo.GetAllAsync();
+            List<Appointment> result = new List<Appointment>();
+
+            foreach (var app in appList)
+            {
+                if (app.CustomerId == id)
+                {
+                    Appointment appointment = new Appointment();
+                    appointment = app;
+                    appointment.Patient = patList.FirstOrDefault(p => p.CustomerId == id);
+                    result.Add(appointment);
+                }
+            }
+
+            if (result.Any())
+            {
+                return result;
+            }
+            return null;
+        }
+
         public async Task<UpdateAppointmentResponse> UpdateAppointment(UpdateAppointmentRequest request)
         {
             if (request.AppointmentId == 0 ||
