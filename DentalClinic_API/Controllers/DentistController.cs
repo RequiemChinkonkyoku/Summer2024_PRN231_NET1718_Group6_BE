@@ -127,9 +127,9 @@ namespace DentalClinic_API.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
         {
-            if (addDentistRequest == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var dentist = await _dentistService.DentistAdd(addDentistRequest);
@@ -146,9 +146,9 @@ namespace DentalClinic_API.Controllers
         [HttpPut("update-dentist/{id}")]
         public async Task<IActionResult> UpdateDentist(int id, [FromBody] UpdateDentistRequest updateDentistRequest)
         {
-            if (updateDentistRequest == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var updatedDentist = await _dentistService.UpdateDentist(id, updateDentistRequest);
@@ -164,9 +164,9 @@ namespace DentalClinic_API.Controllers
         [HttpPut("update-dentist-account/{id}")]
         public async Task<IActionResult> UpdateDentistAccount(int id, [FromBody] UpdateDentistAccountRequest updateDentistAccountRequest)
         {
-            if (updateDentistAccountRequest == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var updatedDentistAccount = await _dentistService.UpdateDentistAccount(id, updateDentistAccountRequest);

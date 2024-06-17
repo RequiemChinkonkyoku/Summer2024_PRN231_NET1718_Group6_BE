@@ -64,6 +64,7 @@ namespace Services.Implement
                 CustomerId = customerId
             };
 
+            patient.Status = 1;
             await _patientRepo.AddAsync(patient);
             return patient;
         }
