@@ -14,12 +14,15 @@ namespace Services.Implement
     {
         private readonly IRepositoryBase<Schedule> _scheduleRepo;
         private readonly IRepositoryBase<Dentist> _dentistRepo;
+        private readonly IRepositoryBase<Profession> _profRepo;
 
         public ScheduleService(IRepositoryBase<Schedule> scheduleRepo,
-                               IRepositoryBase<Dentist> dentistRepo)
+                               IRepositoryBase<Dentist> dentistRepo,
+                               IRepositoryBase<Profession> profRepo)
         {
             _scheduleRepo = scheduleRepo;
             _dentistRepo = dentistRepo;
+            _profRepo = profRepo;
         }
 
         public async Task<List<Schedule>> GetAllSchedules()
@@ -112,5 +115,52 @@ namespace Services.Implement
                 return null;
             }
         }
+
+        public async Task<List<Schedule>> GetSchedulesForApp(int treatmentId)
+        {
+            // Fetch all professionals asynchronously
+            var allProfs = await _profRepo.GetAllAsync();
+
+            // Filter professionals by treatmentId
+            var profList = allProfs.Where(p => p.TreatmentId == treatmentId).ToList();
+
+            if (profList.Any())
+            {
+                var dentList = new List<Dentist>();
+                foreach (var prof in profList)
+                {
+                    // Fetch all dentists asynchronously
+                    var allDentists = await _dentistRepo.GetAllAsync();
+
+                    // Filter dentists by DentistId
+                    var dentist = allDentists.FirstOrDefault(d => d.DentistId == prof.DentistId);
+                    if (dentist != null)
+                    {
+                        dentList.Add(dentist);
+                    }
+                }
+                if (dentList.Any()) 
+                { 
+                    var allSchedules = await _scheduleRepo.GetAllAsync();
+                    var filteredSchedules = allSchedules.Where(s => s.WorkDate > DateTime.Now
+                                                               && s.Status == 1);
+                    var scheduleList = new List<Schedule>();
+                    foreach (var schedule in filteredSchedules)
+                    {
+                        foreach (var dentist in dentList)
+                        {
+                            if (schedule.DentistId.Equals(dentist.DentistId))
+                            {
+                                scheduleList.Add(schedule);
+                            }
+                        }
+                    }
+                    return scheduleList;
+                }
+            }
+
+            return null;
+        }
+
     }
 }
