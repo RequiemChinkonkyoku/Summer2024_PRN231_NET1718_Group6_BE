@@ -207,5 +207,31 @@ namespace DentalClinic_API.Controllers
 
             return Ok(deleteDentistAccount);
         }
+
+        [HttpPost("get-dentist-for-app")]
+        public async Task<IActionResult> GetDentistsForApp([FromBody] GetDentistsForAppRequest request)
+        {
+            int userId = 0;
+
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            var response = await _dentistService.GetDentistsForApp(request);
+
+            if (response != null)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }

@@ -19,5 +19,6 @@ namespace Services.Interface
         Task<List<ProfessionDetail>> ViewProfession(int id);
         Task<Dentist> UpdateDentistAccount(int id, UpdateDentistAccountRequest updateDentistAccountRequest);
         Task<Dentist> DeleteDentistAccount(int id);
+        Task<List<GetDentistsForAppResponse>> GetDentistsForApp(GetDentistsForAppRequest request);
     }
 }
