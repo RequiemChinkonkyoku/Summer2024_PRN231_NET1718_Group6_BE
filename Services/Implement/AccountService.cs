@@ -143,6 +143,8 @@ namespace Services.Implement
                 {
                     Subject = new ClaimsIdentity(new[]
                     {
+                        new Claim(ClaimTypes.NameIdentifier, "0"),
+                        new Claim(ClaimTypes.Email, email),
                         new Claim(ClaimTypes.Role, "Admin")
                     }),
                     Expires = DateTime.UtcNow.AddMinutes(15),
@@ -169,7 +171,7 @@ namespace Services.Implement
 
             return Task.FromResult(false);
         }
-        
+
         public async Task<string> ManagerLogin(string email, string password)
         {
             var isValidManager = await ManagerValidate(email, password);
@@ -182,6 +184,8 @@ namespace Services.Implement
                 {
                     Subject = new ClaimsIdentity(new[]
                     {
+                        new Claim(ClaimTypes.NameIdentifier, "0"),
+                        new Claim(ClaimTypes.Email, email),
                         new Claim(ClaimTypes.Role, "Manager")
                     }),
                     Expires = DateTime.UtcNow.AddMinutes(15),
