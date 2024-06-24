@@ -236,41 +236,15 @@ namespace Services.Implement
             }
         }
 
-        //public async Task BlacklistToken(string token)
-        //{
-        //    try
-        //    {
-        //        var handler = new JwtSecurityTokenHandler();
+        public async Task<Customer> CustomerRegister(string email, string password)
+        {
+            var customer = new Customer();
+            customer.Email = email;
+            customer.Password = password;
+            customer.Status = 1;
 
-        //        if (handler.CanReadToken(token))
-        //        {
-        //            var jwtToken = handler.ReadJwtToken(token);
-
-        //            //blacklist code
-        //            BlacklistedToken _token = new BlacklistedToken();
-        //            _token.TokenString = token;
-        //            _token.BlacklistTime = DateTime.UtcNow;
-        //            await _blacklistedTokenRepo.AddAsync(_token);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Exception while extracting claim from JWT: {ex.Message}");
-        //    }
-        //}
-
-        //public async Task<bool> CheckTokenBlacklisted(string token)
-        //{
-        //    bool result = false;
-        //    var blacklistedTokenList = await _blacklistedTokenRepo.GetAllAsync();
-        //    var _token = blacklistedTokenList.FirstOrDefault(t => t.TokenString.Equals(token));
-
-        //    if (_token != null)
-        //    {
-        //        result = true;
-        //    }
-
-        //    return result;
-        //}
+            _customerRepo.Add(customer);
+            return customer;
+        }
     }
 }

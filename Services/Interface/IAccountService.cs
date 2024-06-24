@@ -14,11 +14,6 @@ namespace Services.Interface
         Task<string> AdminLogin(string email, string password);
         Task<string> ManagerLogin(string email, string password);
         Task<string> GetValueFromToken(string token, string claimType);
-
-        
-
-        //Task BlacklistToken(string token);
-
-        //Task<bool> CheckTokenBlacklisted(string token);
+        Task<Customer> CustomerRegister(string email, string password);
     }
 }

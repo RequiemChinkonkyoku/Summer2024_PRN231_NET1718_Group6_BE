@@ -20,7 +20,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpGet("get-all-dentists")]
-        [Authorize(Roles = "Dentist")]
+        [Authorize(Roles = "Manager, Admin")]
         public async Task<ActionResult<List<Dentist>>> GetAllDentist()
         {
             var dentists = await _dentistService.GetAllDentistAsync();

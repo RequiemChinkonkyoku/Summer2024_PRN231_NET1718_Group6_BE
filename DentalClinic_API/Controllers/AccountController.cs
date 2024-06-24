@@ -109,5 +109,20 @@ namespace DentalClinic_API.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("customer-register")]
+        public async Task<IActionResult> CustomerRegister([FromBody] LoginRequest request)
+        {
+            var response = await _accountService.CustomerRegister(request.Email, request.Password);
+
+            if (response != null)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }
