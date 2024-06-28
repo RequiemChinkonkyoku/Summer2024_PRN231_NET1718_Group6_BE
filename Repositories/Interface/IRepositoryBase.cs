@@ -15,6 +15,7 @@ namespace Repositories.Interface
         public Task AddAsync(T item);
 
         void Update(T item);
+
         public Task UpdateAsync(T item);
 
         void Delete(T item);
