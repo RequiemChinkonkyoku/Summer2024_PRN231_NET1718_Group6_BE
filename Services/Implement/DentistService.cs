@@ -21,6 +21,9 @@ namespace Services.Implement
         private readonly IRepositoryBase<Schedule> _scheduleRepo;
         private readonly IRepositoryBase<Profession> _professionRepo;
         private readonly IRepositoryBase<Treatment> _treatmentRepo;
+        private readonly IRepositoryBase<Appointment> _appointmentRepo;
+        private readonly IRepositoryBase<AppointmentDetail> _appointmentDetailRepo;
+        public DentistService(IRepositoryBase<Dentist> dentistRepository, IRepositoryBase<Schedule> scheduleRepository, IRepositoryBase<Profession> professionRepo, IRepositoryBase<Treatment> treatmentRepo, IRepositoryBase<Appointment> appointmentRepo, IRepositoryBase<AppointmentDetail> appointmentDetailRepo)
         private readonly IRepositoryBase<Profession> _profRepo;
 
         public DentistService(IRepositoryBase<Dentist> dentistRepository, IRepositoryBase<Schedule> scheduleRepository, IRepositoryBase<Profession> professionRepo, IRepositoryBase<Treatment> treatmentRepo, IRepositoryBase<Profession> profRepo)
@@ -29,6 +32,8 @@ namespace Services.Implement
             _scheduleRepo = scheduleRepository;
             _professionRepo = professionRepo;
             _treatmentRepo = treatmentRepo;
+            _appointmentRepo = appointmentRepo;
+            _appointmentDetailRepo = appointmentDetailRepo;
             _profRepo = profRepo;
         }
 

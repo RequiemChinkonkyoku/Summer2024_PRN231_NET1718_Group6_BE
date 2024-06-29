@@ -347,5 +347,28 @@ namespace Services.Implement
 
             return null;
         }
+
+        public async Task<CreateAppointmentResponse> UpdateAppointmentStatus(int id)
+        {
+            var appointment = await _appRepo.FindByIdAsync(id);
+
+            if (appointment == null)
+            {
+                return null;
+            }
+
+            appointment.Status = 1;
+
+            try
+            {
+                await _appRepo.UpdateAsync(appointment);
+            }
+            catch (Exception ex)
+            {
+                return new CreateAppointmentResponse { Success = false, ErrrorMessage = "There has been an error updating the appointment" };
+            }
+
+            return new CreateAppointmentResponse { Success = true, Appointment = appointment };
+        }
     }
 }
