@@ -239,5 +239,32 @@ namespace DentalClinic_API.Controllers
                 return NotFound();
             }
         }
+
+        [HttpGet("get-dentist-appointments")]
+        public async Task<IActionResult> GetDentistAppointments()
+        {
+            int userID = 0;
+
+            try
+            {
+                userID = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Unauthorized();
+            }
+
+            var result = await _appService.GetDentistAppointments(userID);
+
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
     }
 }

@@ -72,6 +72,31 @@ namespace DentalClinic_API.Controllers
             return Ok(new { Token = token });
         }
 
+        [HttpPost("employee-login")]
+        public async Task<IActionResult> EmployeeLogin([FromBody] LoginRequest loginRequest)
+        {
+            var token = await _accountService.AdminLogin(loginRequest.Email, loginRequest.Password);
+
+            if (token == null)
+            {
+                token = await _accountService.ManagerLogin(loginRequest.Email, loginRequest.Password);
+
+                if (token == null)
+                {
+                    token = await _accountService.DentistLogin(loginRequest.Email, loginRequest.Password);
+                }
+            }
+
+            if (token == null)
+            {
+                return Unauthorized("Invalid credentials");
+            }
+            else
+            {
+                return Ok(new { Token = token });
+            }
+        }
+
         [HttpPost("get-value-from-token")]
         public async Task<IActionResult> GetValueFromToken([FromBody] TokenRequest tokenRequest)
         {
@@ -83,6 +108,21 @@ namespace DentalClinic_API.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpPost("customer-register")]
+        public async Task<IActionResult> CustomerRegister([FromBody] LoginRequest request)
+        {
+            var response = await _accountService.CustomerRegister(request.Email, request.Password);
+
+            if (response != null)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

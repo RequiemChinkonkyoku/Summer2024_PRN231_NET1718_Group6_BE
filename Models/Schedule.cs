@@ -7,7 +7,7 @@ public partial class Schedule
 {
     public int ScheduleId { get; set; }
 
-    public DateTime? WorkDate { get; set; }
+    public DateTime WorkDate { get; set; }
 
     public int? TimeSlot { get; set; }
 

@@ -91,5 +91,32 @@ namespace DentalClinic_API.Controllers
                 return BadRequest("Hihi");
             }
         }
+
+        [HttpGet("get-schedules-for-app")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> GetSchedulesForApp(int treatmentId)
+        {
+            int userId = 0;
+
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            var response = await _scheduleService.GetSchedulesForApp(treatmentId);
+
+            if (response.Any())
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest("Failed");
+            }
+        }
     }
 }

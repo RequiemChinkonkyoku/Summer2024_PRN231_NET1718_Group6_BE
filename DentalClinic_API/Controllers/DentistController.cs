@@ -20,7 +20,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpGet("get-all-dentists")]
-        [Authorize(Roles = "Dentist")]
+        [Authorize(Roles = "Manager, Admin")]
         public async Task<ActionResult<List<Dentist>>> GetAllDentist()
         {
             var dentists = await _dentistService.GetAllDentistAsync();
@@ -92,30 +92,6 @@ namespace DentalClinic_API.Controllers
             if (profession != null)
             {
                 return Ok(profession);
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
-        [HttpGet("view-dentist-appointment/{id}")]
-        public async Task<ActionResult<DentistAppointment>> ViewDentistAppointment(int id)
-        {
-            int userId = 0;
-
-            try
-            {
-                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            var appointment = await _dentistService.ViewDentistAppointment(id);
-
-            if (appointment != null)
-            {
-                return Ok(appointment);
             }
             else
             {
@@ -230,6 +206,32 @@ namespace DentalClinic_API.Controllers
             }
 
             return Ok(deleteDentistAccount);
+        }
+
+        [HttpPost("get-dentist-for-app")]
+        public async Task<IActionResult> GetDentistsForApp([FromBody] GetDentistsForAppRequest request)
+        {
+            int userId = 0;
+
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            var response = await _dentistService.GetDentistsForApp(request);
+
+            if (response != null)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

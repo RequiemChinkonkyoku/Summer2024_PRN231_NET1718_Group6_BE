@@ -141,6 +141,9 @@ namespace Services.Implement
 
             try
             {
+                Schedule s = await _scheduleRepo.FindByIdAsync(request.ScheduleId);
+                s.Status = 0;
+                _scheduleRepo.Update(s);
                 await _appRepo.AddAsync(appointment);
                 appointmentDetail.AppointmentId = appointment.AppointmentId;
                 await _appDetailRepo.AddAsync(appointmentDetail);

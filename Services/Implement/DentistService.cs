@@ -23,7 +23,9 @@ namespace Services.Implement
         private readonly IRepositoryBase<Treatment> _treatmentRepo;
         private readonly IRepositoryBase<Appointment> _appointmentRepo;
         private readonly IRepositoryBase<AppointmentDetail> _appointmentDetailRepo;
-        public DentistService(IRepositoryBase<Dentist> dentistRepository, IRepositoryBase<Schedule> scheduleRepository, IRepositoryBase<Profession> professionRepo, IRepositoryBase<Treatment> treatmentRepo, IRepositoryBase<Appointment> appointmentRepo, IRepositoryBase<AppointmentDetail> appointmentDetailRepo)
+        private readonly IRepositoryBase<Profession> _profRepo;
+
+        public DentistService(IRepositoryBase<Dentist> dentistRepository, IRepositoryBase<Schedule> scheduleRepository, IRepositoryBase<Profession> professionRepo, IRepositoryBase<Treatment> treatmentRepo, IRepositoryBase<Appointment> appointmentRepo, IRepositoryBase<AppointmentDetail> appointmentDetailRepo, IRepositoryBase<Profession> profRepo)
         {
             _dentistRepo = dentistRepository;
             _scheduleRepo = scheduleRepository;
@@ -31,6 +33,7 @@ namespace Services.Implement
             _treatmentRepo = treatmentRepo;
             _appointmentRepo = appointmentRepo;
             _appointmentDetailRepo = appointmentDetailRepo;
+            _profRepo = profRepo;
         }
 
         public async Task<List<Dentist>> GetAllDentistAsync()
@@ -70,6 +73,7 @@ namespace Services.Implement
                 Password = addDentistRequest.Password,
                 Type = addDentistRequest.Type,
                 ContractType = addDentistRequest.ContractType,
+                Status = 1
             };
             await _dentistRepo.AddAsync(dentist);
             return dentist;
@@ -187,34 +191,79 @@ namespace Services.Implement
             return deleteDentistAccount;
         }
 
-        public async Task<List<DentistAppointment>> ViewDentistAppointment(int id)
+        public async Task<List<GetDentistsForAppResponse>> GetDentistsForApp(GetDentistsForAppRequest request)
         {
-            var appointments = await _appointmentRepo.GetAllAsync();
-            var appointmentDetails = await _appointmentDetailRepo.GetAllAsync();
-            if (appointments != null && appointments.Any() && appointmentDetails != null && appointmentDetails.Any())
+            int treatmentId = request.TreatmentId;
+            DateTime date = request.Date;
+            int timeSlot = request.TimeSlot;
+
+            // Fetch all professionals asynchronously
+            var allProfs = await _profRepo.GetAllAsync();
+
+            var allDentists = await _dentistRepo.GetAllAsync();
+
+            // Filter professionals by treatmentId
+            var profList = allProfs.Where(p => p.TreatmentId == treatmentId).ToList();
+
+            if (profList.Any())
             {
-                var result = from a in appointments
-                             join ad in appointmentDetails on a.AppointmentId equals ad.AppointmentId
-                             where ad.DentistId == id
-                             select new DentistAppointment
-                             {
-                                AppointmentId = a.AppointmentId,
-                                 CreateDate = a.CreateDate,
-                                 ArrivalDate = a.ArrivalDate,
-                                 TimeSlot = a.TimeSlot,
-                                 Status = a.Status,
-                                 CustomerId = a.CustomerId,
-                                 PatientId = a.PatientId,
-                                 TreatmentId = ad.TreatmentId,
-                                 DentistId = ad.DentistId,
-                                 ScheduleId = ad.ScheduleId,
-                             };
-                return result.ToList();
+                var dentList = new List<Dentist>();
+                foreach (var prof in profList)
+                {
+                    // Filter dentists by DentistId
+                    var dentist = allDentists.FirstOrDefault(d => d.DentistId == prof.DentistId);
+                    if (dentist != null)
+                    {
+                        dentList.Add(dentist);
+                    }
+                }
+                if (dentList.Any())
+                {
+                    var allSchedules = await _scheduleRepo.GetAllAsync();
+                    var filteredSchedules = allSchedules.Where(s => s.WorkDate > DateTime.Now
+                                                               && s.Status == 1);
+                    var scheduleList = new List<Schedule>();
+                    foreach (var schedule in filteredSchedules)
+                    {
+                        foreach (var dentist in dentList)
+                        {
+                            if (schedule.DentistId.Equals(dentist.DentistId))
+                            {
+                                scheduleList.Add(schedule);
+                            }
+                        }
+                    }
+                    if (scheduleList.Any())
+                    {
+                        var filteredScheduleList = new List<Schedule>();
+                        foreach (var schedule in scheduleList)
+                        {
+                            if (DateTime.Compare(schedule.WorkDate, date) == 0 && schedule.TimeSlot == timeSlot)
+                            {
+                                filteredScheduleList.Add(schedule);
+                            }
+                        }
+                        if (filteredScheduleList.Any())
+                        {
+                            var filteredDentList = new List<Dentist>();
+                            var response = new List<GetDentistsForAppResponse>();
+                            foreach (Schedule schedule in filteredScheduleList)
+                            {
+                                var dentist = allDentists.FirstOrDefault(d => d.DentistId == schedule.DentistId);
+                                filteredDentList.Add(dentist);
+                                var result = new GetDentistsForAppResponse();
+                                result.DentistId = dentist.DentistId;
+                                result.DentistName = dentist.Name;
+                                result.ScheduleId = schedule.ScheduleId;
+                                response.Add(result);
+                            }
+                            return response;
+                        }
+                    }
+                }
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 }
