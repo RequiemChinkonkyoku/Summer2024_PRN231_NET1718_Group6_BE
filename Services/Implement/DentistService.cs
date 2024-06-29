@@ -21,13 +21,16 @@ namespace Services.Implement
         private readonly IRepositoryBase<Schedule> _scheduleRepo;
         private readonly IRepositoryBase<Profession> _professionRepo;
         private readonly IRepositoryBase<Treatment> _treatmentRepo;
-
-        public DentistService(IRepositoryBase<Dentist> dentistRepository, IRepositoryBase<Schedule> scheduleRepository, IRepositoryBase<Profession> professionRepo, IRepositoryBase<Treatment> treatmentRepo)
+        private readonly IRepositoryBase<Appointment> _appointmentRepo;
+        private readonly IRepositoryBase<AppointmentDetail> _appointmentDetailRepo;
+        public DentistService(IRepositoryBase<Dentist> dentistRepository, IRepositoryBase<Schedule> scheduleRepository, IRepositoryBase<Profession> professionRepo, IRepositoryBase<Treatment> treatmentRepo, IRepositoryBase<Appointment> appointmentRepo, IRepositoryBase<AppointmentDetail> appointmentDetailRepo)
         {
             _dentistRepo = dentistRepository;
             _scheduleRepo = scheduleRepository;
             _professionRepo = professionRepo;
             _treatmentRepo = treatmentRepo;
+            _appointmentRepo = appointmentRepo;
+            _appointmentDetailRepo = appointmentDetailRepo;
         }
 
         public async Task<List<Dentist>> GetAllDentistAsync()
@@ -182,6 +185,36 @@ namespace Services.Implement
             deleteDentistAccount.Status = 0;
             await _dentistRepo.UpdateAsync(deleteDentistAccount);
             return deleteDentistAccount;
+        }
+
+        public async Task<List<DentistAppointment>> ViewDentistAppointment(int id)
+        {
+            var appointments = await _appointmentRepo.GetAllAsync();
+            var appointmentDetails = await _appointmentDetailRepo.GetAllAsync();
+            if (appointments != null && appointments.Any() && appointmentDetails != null && appointmentDetails.Any())
+            {
+                var result = from a in appointments
+                             join ad in appointmentDetails on a.AppointmentId equals ad.AppointmentId
+                             where ad.DentistId == id
+                             select new DentistAppointment
+                             {
+                                AppointmentId = a.AppointmentId,
+                                 CreateDate = a.CreateDate,
+                                 ArrivalDate = a.ArrivalDate,
+                                 TimeSlot = a.TimeSlot,
+                                 Status = a.Status,
+                                 CustomerId = a.CustomerId,
+                                 PatientId = a.PatientId,
+                                 TreatmentId = ad.TreatmentId,
+                                 DentistId = ad.DentistId,
+                                 ScheduleId = ad.ScheduleId,
+                             };
+                return result.ToList();
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
