@@ -69,6 +69,7 @@ namespace Services.Implement
                 Password = addDentistRequest.Password,
                 Type = addDentistRequest.Type,
                 ContractType = addDentistRequest.ContractType,
+                Status = 1
             };
             await _dentistRepo.AddAsync(dentist);
             return dentist;

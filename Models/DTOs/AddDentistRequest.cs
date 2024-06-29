@@ -29,8 +29,8 @@ namespace Models.DTOs
         [StringLength(50, ErrorMessage = "ContractType should not exceed 50 characters")]
         public string? ContractType { get; set; }
 
-        [Required(ErrorMessage = "Status is required")]
-        [Range(0, 1, ErrorMessage = "Status must be between 0 and 1")]
-        public int? Status { get; set; }
+        //[Required(ErrorMessage = "Status is required")]
+        //[Range(0, 1, ErrorMessage = "Status must be between 0 and 1")]
+        //public int? Status { get; set; }
     }
 }
