@@ -98,30 +98,6 @@ namespace DentalClinic_API.Controllers
                 return NotFound();
             }
         }
-        [HttpGet("view-dentist-appointment/{id}")]
-        public async Task<ActionResult<DentistAppointment>> ViewDentistAppointment(int id)
-        {
-            int userId = 0;
-
-            try
-            {
-                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            var appointment = await _dentistService.ViewDentistAppointment(id);
-
-            if (appointment != null)
-            {
-                return Ok(appointment);
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
 
         [HttpPost("add-dentist")]
         [Authorize(Roles = "Manager")]
