@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.DTOs;
+using Newtonsoft.Json;
 using Services.Implement;
 using Services.Interface;
+using System.Net.Http;
 using System.Security.Claims;
 
 namespace DentalClinic_API.Controllers
@@ -12,11 +14,13 @@ namespace DentalClinic_API.Controllers
     [Route("[controller]")]
     public class DentistController : Controller
     {
+        private HttpClient _httpClient;
         private IDentistService _dentistService;
 
         public DentistController(IDentistService dentistService)
         {
             _dentistService = dentistService;
+            _httpClient = new HttpClient();
         }
 
         [HttpGet("get-all-dentists")]
@@ -25,6 +29,15 @@ namespace DentalClinic_API.Controllers
         {
             var dentists = await _dentistService.GetAllDentistAsync();
             return Ok(dentists);
+        }
+
+        [HttpGet("get-all-dentists-odata")]
+        public async Task<IActionResult> GetFromOdata()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync("http://localhost:5298/odata/Dentists");
+            string json = await response.Content.ReadAsStringAsync();
+            dynamic allDentists = JsonConvert.DeserializeObject<OdataResponse<IEnumerable<Dentist>>>(json);
+            return Ok(allDentists);
         }
 
         [HttpGet("get-dentist-by-id/{id}")]
