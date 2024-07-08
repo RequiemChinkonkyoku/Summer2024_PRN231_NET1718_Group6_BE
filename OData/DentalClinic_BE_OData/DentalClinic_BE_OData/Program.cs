@@ -12,8 +12,13 @@ var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntitySet<Dentist>("Dentists");
 var edmModel = modelBuilder.GetEdmModel();
 
-builder.Services.AddControllers().AddOData(
-    options => options.EnableQueryFeatures(null).AddRouteComponents("odata",edmModel)); ;
+builder.Services.AddControllers().AddOData(options =>
+{
+    options.EnableQueryFeatures(); 
+    options.AddRouteComponents("odata", edmModel); 
+});
+
+
 
 builder.Services.AddScoped<IRepositoryBase<Appointment>, AppointmentRepository>();
 builder.Services.AddScoped<IRepositoryBase<AppointmentDetail>, AppointmentDetailRepository>();
