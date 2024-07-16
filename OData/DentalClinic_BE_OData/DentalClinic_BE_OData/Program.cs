@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntitySet<Dentist>("Dentists");
 modelBuilder.EntitySet<Treatment>("Treatments");
+modelBuilder.EntitySet<Patient>("Patients");
 var edmModel = modelBuilder.GetEdmModel();
 
 builder.Services.AddControllers().AddOData(options =>
