@@ -80,6 +80,23 @@ namespace DentalClinic_BE_OData.Controllers
             
             return Ok(updatedDentist);
         }
+
+        [EnableQuery]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProfessionDetail>> GetById(int id)
+        {
+
+            var dentist = await _dentistService.ViewProfession(id);
+
+            if (dentist != null)
+            {
+                return Ok(dentist);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
     }
 }
 

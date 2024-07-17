@@ -10,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntitySet<Dentist>("Dentists");
+modelBuilder.EntitySet<Schedule>("Schedules");
+modelBuilder.EntitySet<MedicalRecord>("MedicalRecord");
+modelBuilder.EntitySet<ProfessionDetail>("ProfessionDetails");
+modelBuilder.EntitySet<Profession>("Professions");
 var edmModel = modelBuilder.GetEdmModel();
 
 builder.Services.AddControllers().AddOData(options =>
@@ -29,7 +33,7 @@ builder.Services.AddScoped<IRepositoryBase<Customer>, CustomerRepository>();
 builder.Services.AddScoped<IRepositoryBase<Patient>, PatientRepository>();
 builder.Services.AddScoped<IRepositoryBase<Schedule>, ScheduleRepository>();
 builder.Services.AddScoped<IRepositoryBase<Treatment>, TreatmentRepository>();
-builder.Services.AddScoped<IRepositoryBase<Models.Transaction>, TransactionRepository>();
+builder.Services.AddScoped<IRepositoryBase<Transaction>, TransactionRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
@@ -41,6 +45,7 @@ builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IAppointmentDetailService, AppointmentDetailService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

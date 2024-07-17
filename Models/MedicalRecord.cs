@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models;
 
 public partial class MedicalRecord
 {
+    [Key]
     public int RecordId { get; set; }
 
     public string? Diagnosis { get; set; }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models;
 
 public partial class Profession
 {
+    [Key]
     public int ProfessionId { get; set; }
 
     public int? DentistId { get; set; }

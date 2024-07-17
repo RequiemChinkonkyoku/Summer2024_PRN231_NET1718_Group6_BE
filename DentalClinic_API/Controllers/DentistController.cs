@@ -114,14 +114,30 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpGet("view-dentist-profession/{id}")]
+        //[HttpGet("view-dentist-profession/{id}")]
+        //public async Task<ActionResult<ProfessionDetail>> ViewProfession(int id)
+        //{
+        //    var profession = await _dentistService.ViewProfession(id);
+
+        //    if (profession != null)
+        //    {
+        //        return Ok(profession);
+        //    }
+        //    else
+        //    {
+        //        return NotFound();
+        //    }
+        //}
+
+        [HttpGet("view-dentist-profession-id/{id}")]
         public async Task<ActionResult<ProfessionDetail>> ViewProfession(int id)
         {
-            var profession = await _dentistService.ViewProfession(id);
-
-            if (profession != null)
+            HttpResponseMessage response = await _httpClient.GetAsync($"http://localhost:5298/odata/Schedules({id})");
+            if (response.IsSuccessStatusCode)
             {
-                return Ok(profession);
+                string json = await response.Content.ReadAsStringAsync();
+                var professionDetail = JsonConvert.DeserializeObject<ProfessionDetail>(json);
+                return Ok(professionDetail);
             }
             else
             {
