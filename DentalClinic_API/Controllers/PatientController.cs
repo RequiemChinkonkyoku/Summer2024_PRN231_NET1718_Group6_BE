@@ -109,20 +109,7 @@ namespace DentalClinic_API.Controllers
         //}
 
 
-        [HttpGet("get-medical-record/{id}")]
-        public async Task<ActionResult<MedicalRecord>> ViewMedicalRecord(int id)
-        {
-            var medicalrecord = await _patientService.ViewMedicalRecord(id);
-
-            if (medicalrecord != null)
-            {
-                return Ok(medicalrecord);
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
+        
 
         [HttpPost("add-patient")]
         [Authorize(Roles = "Customer")]
