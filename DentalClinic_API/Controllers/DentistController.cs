@@ -130,6 +130,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpPost("add-dentist")]
+        [Authorize(Roles = "Manager, Admin")]
         public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
         {
             try
@@ -176,6 +177,7 @@ namespace DentalClinic_API.Controllers
         //}
 
         [HttpPut("update-dentist/{id}")]
+        [Authorize(Roles = "Manager, Admin, Dentist")]
         public async Task<IActionResult> UpdateDentist(int id, [FromBody] UpdateDentistRequest updateDentistRequest)
         {
             try
@@ -269,14 +271,37 @@ namespace DentalClinic_API.Controllers
         [HttpDelete("delete-dentist/{id}")]
         public async Task<IActionResult> DeleteDentist(int id)
         {
-            var deletedentist = await _dentistService.DeleteDentist(id);
-            if (deletedentist == null)
+            try
             {
-                return NotFound();
-            }
+                HttpResponseMessage response = await _httpClient.DeleteAsync($"http://localhost:5298/odata/Dentists/{id}");
 
-            return Ok(deletedentist);
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    return Ok(result); 
+                }
+                else
+                {
+                    return StatusCode((int)response.StatusCode, $"Failed to delete dentist: {response.ReasonPhrase}");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
+
+        //[HttpDelete("delete-dentist/{id}")]
+        //public async Task<IActionResult> DeleteDentist(int id)
+        //{
+        //    var deletedentist = await _dentistService.DeleteDentist(id);
+        //    if (deletedentist == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok(deletedentist);
+        //}
 
         [HttpDelete("delete-dentist-account/{id}")]
         public async Task<IActionResult> DeleteDentistAccount(int id)
