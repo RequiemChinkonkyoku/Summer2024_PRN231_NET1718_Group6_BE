@@ -10,5 +10,6 @@ namespace Services.Interface
     public interface ICustomerService
     {
         Task<List<Customer>> GetAllCustomersAsync();
+        Task<Customer> GetCustomerById(int id);
     }
 }
