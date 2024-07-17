@@ -25,5 +25,28 @@ namespace Services.Implement
         {
             return await _customerRepo.GetAllAsync();
         }
+
+        public async Task<Customer> GetCustomerById(int id)
+        {
+            var customers = await _customerRepo.GetAllAsync();
+
+            if (!customers.IsNullOrEmpty())
+            {
+                var customer = customers.FirstOrDefault(p => p.CustomerId == id);
+
+                if (customer != null)
+                {
+                    return customer;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }
