@@ -10,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntitySet<Dentist>("Dentists");
+modelBuilder.EntitySet<Treatment>("Treatments");
+modelBuilder.EntitySet<Patient>("Patients");
 var edmModel = modelBuilder.GetEdmModel();
 
 builder.Services.AddControllers().AddOData(options =>

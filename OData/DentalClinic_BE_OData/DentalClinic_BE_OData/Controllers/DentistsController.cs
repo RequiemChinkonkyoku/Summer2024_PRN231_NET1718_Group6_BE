@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.OData.UriParser;
 using Models;
 using Models.DTOs;
 using Services.Interface;
@@ -79,6 +80,18 @@ namespace DentalClinic_BE_OData.Controllers
 
             
             return Ok(updatedDentist);
+        }
+
+        [EnableQuery]
+        public async Task<IActionResult> Delete(int key)
+        {
+            var deletedentist = await _dentistService.DeleteDentist(key);
+            if (deletedentist == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(deletedentist);
         }
     }
 }
