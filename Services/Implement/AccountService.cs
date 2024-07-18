@@ -252,5 +252,28 @@ namespace Services.Implement
             _customerRepo.Add(customer);
             return customer;
         }
+
+        public async Task<Customer> CustomerChangePassword(int userId, string currentPassword, string newPassword)
+        {
+            var customers = await _customerRepo.GetAllAsync();
+            if (!customers.IsNullOrEmpty())
+            {
+                var customer = customers.FirstOrDefault(x => x.CustomerId.Equals(userId));
+                if (customer != null)
+                {
+                    if (BCrypt.Net.BCrypt.Verify(currentPassword, customer.PasswordHash))
+                    {
+                        customer.Password = newPassword;
+                        string temp = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                        customer.PasswordHash = temp;
+
+                        _customerRepo.UpdateAsync(customer);
+                        return customer;
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 }

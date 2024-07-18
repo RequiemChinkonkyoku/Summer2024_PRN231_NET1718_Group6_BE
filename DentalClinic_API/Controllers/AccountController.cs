@@ -6,6 +6,7 @@ using Models;
 using Models.DTOs;
 using Services.Implement;
 using Services.Interface;
+using System.Security.Claims;
 
 namespace DentalClinic_API.Controllers
 {
@@ -114,6 +115,34 @@ namespace DentalClinic_API.Controllers
         public async Task<IActionResult> CustomerRegister([FromBody] LoginRequest request)
         {
             var response = await _accountService.CustomerRegister(request.Email, request.Password);
+
+            if (response != null)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+
+        [HttpPut("customer-change-password")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> CustomerChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            int userId = 0;
+
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            var response = await _accountService.CustomerChangePassword(userId, request.CurrentPassword, request.NewPassword);
 
             if (response != null)
             {
