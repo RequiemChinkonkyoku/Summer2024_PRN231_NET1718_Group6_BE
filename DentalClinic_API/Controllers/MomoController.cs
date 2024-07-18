@@ -12,11 +12,13 @@ namespace DentalClinic_API.Controllers
     {
         private readonly IMomoService _momoService;
         private readonly IAppointmentService _appService;
+        private readonly ITransactionService _transactionService;
 
-        public MomoController(IMomoService service, IAppointmentService appService)
+        public MomoController(IMomoService service, IAppointmentService appService, ITransactionService transactionService)
         {
             _momoService = service;
             _appService = appService;
+            _transactionService = transactionService;
         }
 
         [HttpPost("create-payment")]
@@ -82,8 +84,12 @@ namespace DentalClinic_API.Controllers
 
                 if (!updateResponse.Success)
                 {
+                    _transactionService.CreateTransaction(id, updateResponse.Success);
+
                     return BadRequest(updateResponse.ErrrorMessage);
                 }
+
+                _transactionService.CreateTransaction(id, updateResponse.Success);
 
                 return Ok(updateResponse);
             }
