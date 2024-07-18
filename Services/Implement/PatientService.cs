@@ -106,27 +106,7 @@ namespace Services.Implement
             return deletepatient;
         }
 
-        public async Task<MedicalRecord> ViewMedicalRecord(int id)
-        {
-            var medicalrecords = await _medicalRecordRepo.GetAllAsync();
-            if (!medicalrecords.IsNullOrEmpty())
-            {
-                var medicalrecord = medicalrecords.FirstOrDefault(m => m.PatientId == id);
-
-                if (medicalrecord != null)
-                {
-                    return medicalrecord;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
+        
 
         public async Task<List<Schedule>> ViewClinicScheduleAsync()
         {

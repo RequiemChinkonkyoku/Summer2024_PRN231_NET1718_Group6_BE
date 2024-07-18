@@ -119,6 +119,23 @@ namespace Services.Implement
                 }
             }
 
+            var apps = await _appRepo.GetAllAsync();
+
+            var existingApp = apps.FirstOrDefault(a => a.ArrivalDate == schedule.WorkDate
+                                                    && a.TimeSlot == schedule.TimeSlot);
+
+            if (existingApp != null)
+            {
+                var appDetails = await _appDetailRepo.GetAllAsync();
+
+                var currentDetail = appDetails.FirstOrDefault(d => d.AppointmentId == existingApp.AppointmentId);
+
+                if (currentDetail.DentistId == request.DentistId)
+                {
+                    return new CreateAppointmentResponse { Success = false, ErrrorMessage = "There is an existing appointment." };
+                }
+            }
+
             var appointment = new Appointment
             {
                 CreateDate = DateTime.Now,

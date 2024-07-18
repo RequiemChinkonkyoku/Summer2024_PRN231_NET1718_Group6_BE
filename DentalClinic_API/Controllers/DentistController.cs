@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.DTOs;
+using Newtonsoft.Json;
 using Services.Implement;
 using Services.Interface;
+using System.Net.Http;
 using System.Security.Claims;
 
 namespace DentalClinic_API.Controllers
@@ -12,11 +14,13 @@ namespace DentalClinic_API.Controllers
     [Route("[controller]")]
     public class DentistController : Controller
     {
+        private HttpClient _httpClient;
         private IDentistService _dentistService;
 
         public DentistController(IDentistService dentistService)
         {
             _dentistService = dentistService;
+            _httpClient = new HttpClient();
         }
 
         [HttpGet("get-all-dentists")]
@@ -27,13 +31,24 @@ namespace DentalClinic_API.Controllers
             return Ok(dentists);
         }
 
+        [HttpGet("get-all-dentists-odata")]
+        public async Task<IActionResult> GetFromOdata()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync("http://localhost:5298/odata/Dentists");
+            string json = await response.Content.ReadAsStringAsync();
+            dynamic allDentists = JsonConvert.DeserializeObject<OdataResponse<IEnumerable<Dentist>>>(json);
+            return Ok(allDentists);
+        }
+
+
         [HttpGet("get-dentist-by-id/{id}")]
         public async Task<ActionResult<Dentist>> GetDentistById(int id)
         {
-            var dentist = await _dentistService.GetDentistByID(id);
-
-            if (dentist != null)
+            HttpResponseMessage response = await _httpClient.GetAsync($"http://localhost:5298/odata/Dentists({id})");
+            if (response.IsSuccessStatusCode)
             {
+                string json = await response.Content.ReadAsStringAsync();
+                var dentist = JsonConvert.DeserializeObject<Dentist>(json);
                 return Ok(dentist);
             }
             else
@@ -41,6 +56,21 @@ namespace DentalClinic_API.Controllers
                 return NotFound();
             }
         }
+
+        //[HttpGet("get-dentist-by-id/{id}")]
+        //public async Task<ActionResult<Dentist>> GetDentistById(int id)
+        //{
+        //    var dentist = await _dentistService.GetDentistByID(id);
+
+        //    if (dentist != null)
+        //    {
+        //        return Ok(dentist);
+        //    }
+        //    else
+        //    {
+        //        return NotFound();
+        //    }
+        //}
 
         [HttpGet("get-current-dentist")]
         [Authorize(Roles = "Dentist")]
@@ -100,42 +130,96 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpPost("add-dentist")]
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Manager, Admin")]
         public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
+                var json = JsonConvert.SerializeObject(addDentistRequest);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-            var dentist = await _dentistService.DentistAdd(addDentistRequest);
-            if (dentist != null)
-            {
-                return Ok(dentist);
+                HttpResponseMessage response = await _httpClient.PostAsync("http://localhost:5298/odata/Dentists", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    return Ok(result); 
+                }
+                else
+                {
+                    return StatusCode((int)response.StatusCode, $"Failed to add dentist: {response.ReasonPhrase}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest();
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        //[HttpPost("add-dentist")]
+        //[Authorize(Roles = "Manager")]
+        //public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    var dentist = await _dentistService.DentistAdd(addDentistRequest);
+        //    if (dentist != null)
+        //    {
+        //        return Ok(dentist);
+        //    }
+        //    else
+        //    {
+        //        return BadRequest();
+        //    }
+        //}
 
         [HttpPut("update-dentist/{id}")]
+        [Authorize(Roles = "Manager, Admin, Dentist")]
         public async Task<IActionResult> UpdateDentist(int id, [FromBody] UpdateDentistRequest updateDentistRequest)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                var json = JsonConvert.SerializeObject(updateDentistRequest);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await _httpClient.PatchAsync($"http://localhost:5298/odata/Dentists/{id}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    return Ok(result); // Return the updated Dentist details or success message
+                }
+                else
+                {
+                    return StatusCode((int)response.StatusCode, $"Failed to update dentist: {response.ReasonPhrase}");
+                }
             }
-
-            var updatedDentist = await _dentistService.UpdateDentist(id, updateDentistRequest);
-
-            if (updatedDentist == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
-            return Ok(updatedDentist);
         }
+
+        //[HttpPut("update-dentist/{id}")]
+        //public async Task<IActionResult> UpdateDentist(int id, [FromBody] UpdateDentistRequest updateDentistRequest)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    var updatedDentist = await _dentistService.UpdateDentist(id, updateDentistRequest);
+
+        //    if (updatedDentist == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok(updatedDentist);
+        //}
 
         [HttpPut("update-dentist-account/{id}")]
         public async Task<IActionResult> UpdateDentistAccount(int id, [FromBody] UpdateDentistAccountRequest updateDentistAccountRequest)
@@ -187,14 +271,37 @@ namespace DentalClinic_API.Controllers
         [HttpDelete("delete-dentist/{id}")]
         public async Task<IActionResult> DeleteDentist(int id)
         {
-            var deletedentist = await _dentistService.DeleteDentist(id);
-            if (deletedentist == null)
+            try
             {
-                return NotFound();
-            }
+                HttpResponseMessage response = await _httpClient.DeleteAsync($"http://localhost:5298/odata/Dentists/{id}");
 
-            return Ok(deletedentist);
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    return Ok(result); 
+                }
+                else
+                {
+                    return StatusCode((int)response.StatusCode, $"Failed to delete dentist: {response.ReasonPhrase}");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
+
+        //[HttpDelete("delete-dentist/{id}")]
+        //public async Task<IActionResult> DeleteDentist(int id)
+        //{
+        //    var deletedentist = await _dentistService.DeleteDentist(id);
+        //    if (deletedentist == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok(deletedentist);
+        //}
 
         [HttpDelete("delete-dentist-account/{id}")]
         public async Task<IActionResult> DeleteDentistAccount(int id)
