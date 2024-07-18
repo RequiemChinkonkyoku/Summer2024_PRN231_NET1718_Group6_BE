@@ -50,6 +50,28 @@ namespace Services.Implement
             }
         }
 
+        public async Task<MedicalRecord> GetMedicalRecordByAppId(int id)
+        {
+            var medicalRecords = await _medicalRecordRepo.GetAllAsync();
+            if (!medicalRecords.IsNullOrEmpty())
+            {
+                var medicalRecord = medicalRecords.FirstOrDefault(m => m.AppointmentId == id);
+
+                if (medicalRecord != null)
+                {
+                    return medicalRecord;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async Task<MedicalRecord> AddMedicalRecordAsync(AddMedicalRecordRequest addMedicalRecordRequest, int appointmentID)
         {
             if (addMedicalRecordRequest == null)
@@ -76,7 +98,7 @@ namespace Services.Implement
             return medicalRecord;
         }
 
-        public async Task<MedicalRecord> UpdateMedicalRecordAsync(int id ,UpdateMedicalRecordRequest updateMedicalRecordRequest)
+        public async Task<MedicalRecord> UpdateMedicalRecordAsync(int id, UpdateMedicalRecordRequest updateMedicalRecordRequest)
         {
             var medicalRecord = await _medicalRecordRepo.GetAllAsync();
             var updatedmedicalRecord = medicalRecord.FirstOrDefault(d => d.RecordId == id);
@@ -90,7 +112,7 @@ namespace Services.Implement
             {
                 throw new ArgumentException("Invalid record ID.");
             }
-            if(updatedmedicalRecord.Status == 1) 
+            if (updatedmedicalRecord.Status == 1)
             {
                 throw new ArgumentException("You cannot change MedicalRecord Status when it's complete");
 

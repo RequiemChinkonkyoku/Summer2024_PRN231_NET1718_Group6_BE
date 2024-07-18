@@ -69,11 +69,13 @@ namespace Services.Implement
             var customers = await _customerRepo.GetAllAsync();
             if (!customers.IsNullOrEmpty())
             {
-                var customer = customers.FirstOrDefault(x => x.Email.Equals(email)
-                                                             && x.Password.Equals(password));
+                var customer = customers.FirstOrDefault(x => x.Email.Equals(email));
                 if (customer != null)
                 {
-                    return customer;
+                    if (BCrypt.Net.BCrypt.Verify(password, customer.PasswordHash))
+                    {
+                        return customer;
+                    }
                 }
             }
             return null;
@@ -121,11 +123,13 @@ namespace Services.Implement
             var dentists = await _dentistRepo.GetAllAsync();
             if (!dentists.IsNullOrEmpty())
             {
-                var dentist = dentists.FirstOrDefault(x => x.Email.Equals(email)
-                                                      && x.Password.Equals(password));
-                if (!(dentist == null))
+                var dentist = dentists.FirstOrDefault(x => x.Email.Equals(email));
+                if (dentist != null)
                 {
-                    return dentist;
+                    if (BCrypt.Net.BCrypt.Verify(password, dentist.PasswordHash))
+                    {
+                        return dentist;
+                    }
                 }
             }
             return null;
@@ -241,6 +245,8 @@ namespace Services.Implement
             var customer = new Customer();
             customer.Email = email;
             customer.Password = password;
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
+            customer.PasswordHash = passwordHash;
             customer.Status = 1;
 
             _customerRepo.Add(customer);

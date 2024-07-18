@@ -39,13 +39,11 @@ public partial class DentalClinicDbContext : DbContext
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("server=(local); database=DentalClinicDB; uid=sa; pwd=12345; TrustServerCertificate=True");
 
-
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Appointment>(entity =>
         {
-            entity.HasKey(e => e.AppointmentId).HasName("PK__appointm__D067651E92271A2D");
+            entity.HasKey(e => e.AppointmentId).HasName("PK__appointm__D067651E971A57CA");
 
             entity.ToTable("appointment");
 
@@ -75,7 +73,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<AppointmentDetail>(entity =>
         {
-            entity.HasKey(e => e.AppointmentDetailId).HasName("PK__appointm__B5CE973CAC343822");
+            entity.HasKey(e => e.AppointmentDetailId).HasName("PK__appointm__B5CE973C1F839E86");
 
             entity.ToTable("appointmentDetails");
 
@@ -104,7 +102,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.CustomerId).HasName("PK__customer__B611CB9DDDE588BE");
+            entity.HasKey(e => e.CustomerId).HasName("PK__customer__B611CB9DBA65D980");
 
             entity.ToTable("customer");
 
@@ -117,12 +115,15 @@ public partial class DentalClinicDbContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("password");
+            entity.Property(e => e.PasswordHash)
+                .IsUnicode(false)
+                .HasColumnName("passwordHash");
             entity.Property(e => e.Status).HasColumnName("status");
         });
 
         modelBuilder.Entity<Dentist>(entity =>
         {
-            entity.HasKey(e => e.DentistId).HasName("PK__dentist__38160498E76ADC21");
+            entity.HasKey(e => e.DentistId).HasName("PK__dentist__3816049888705821");
 
             entity.ToTable("dentist");
 
@@ -143,13 +144,16 @@ public partial class DentalClinicDbContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("password");
+            entity.Property(e => e.PasswordHash)
+                .IsUnicode(false)
+                .HasColumnName("passwordHash");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.Type).HasColumnName("type");
         });
 
         modelBuilder.Entity<MedicalRecord>(entity =>
         {
-            entity.HasKey(e => e.RecordId).HasName("PK__medicalR__D825197ED326FDEA");
+            entity.HasKey(e => e.RecordId).HasName("PK__medicalR__D825197E96D7C891");
 
             entity.ToTable("medicalRecord");
 
@@ -177,7 +181,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Patient>(entity =>
         {
-            entity.HasKey(e => e.PatientId).HasName("PK__patient__A17005CC2876580D");
+            entity.HasKey(e => e.PatientId).HasName("PK__patient__A17005CC672051AE");
 
             entity.ToTable("patient");
 
@@ -186,7 +190,6 @@ public partial class DentalClinicDbContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("address");
-            entity.Property(e => e.Age).HasColumnName("age");
             entity.Property(e => e.CustomerId).HasColumnName("customerID");
             entity.Property(e => e.Gender).HasColumnName("gender");
             entity.Property(e => e.Name)
@@ -194,6 +197,7 @@ public partial class DentalClinicDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("name");
             entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.YearOfBirth).HasColumnName("yearOfBirth");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Patients)
                 .HasForeignKey(d => d.CustomerId)
@@ -202,7 +206,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Profession>(entity =>
         {
-            entity.HasKey(e => e.ProfessionId).HasName("PK__professi__2FE38803BA9C6B71");
+            entity.HasKey(e => e.ProfessionId).HasName("PK__professi__2FE38803FCA5A810");
 
             entity.ToTable("profession");
 
@@ -221,7 +225,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Schedule>(entity =>
         {
-            entity.HasKey(e => e.ScheduleId).HasName("PK__schedule__A532EDB451C6A677");
+            entity.HasKey(e => e.ScheduleId).HasName("PK__schedule__A532EDB41A528BA8");
 
             entity.ToTable("schedule");
 
@@ -240,7 +244,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Transaction>(entity =>
         {
-            entity.HasKey(e => e.TransactionId).HasName("PK__transact__9B57CF52E1D9E4EC");
+            entity.HasKey(e => e.TransactionId).HasName("PK__transact__9B57CF5236CE7B49");
 
             entity.ToTable("transaction");
 
@@ -264,7 +268,7 @@ public partial class DentalClinicDbContext : DbContext
 
         modelBuilder.Entity<Treatment>(entity =>
         {
-            entity.HasKey(e => e.TreatmentId).HasName("PK__treatmen__D7AA5888B8C743F6");
+            entity.HasKey(e => e.TreatmentId).HasName("PK__treatmen__D7AA5888E6ED1C15");
 
             entity.ToTable("treatment");
 

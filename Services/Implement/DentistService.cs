@@ -66,15 +66,17 @@ namespace Services.Implement
 
         public async Task<Dentist> DentistAdd(AddDentistRequest addDentistRequest)
         {
-            var dentist = new Dentist()
-            {
-                Name = addDentistRequest.Name,
-                Email = addDentistRequest.Email,
-                Password = addDentistRequest.Password,
-                Type = addDentistRequest.Type,
-                ContractType = addDentistRequest.ContractType,
-                Status = 1
-            };
+            var dentist = new Dentist();
+
+            dentist.Name = addDentistRequest.Name;
+            dentist.Email = addDentistRequest.Email;
+            dentist.Password = addDentistRequest.Password;
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(addDentistRequest.Password);
+            dentist.PasswordHash = passwordHash;
+            dentist.Type = addDentistRequest.Type;
+            dentist.ContractType = addDentistRequest.ContractType;
+            dentist.Status = 1;
+
             await _dentistRepo.AddAsync(dentist);
             return dentist;
         }
@@ -113,7 +115,7 @@ namespace Services.Implement
             await _dentistRepo.UpdateAsync(deletedentist);
             return deletedentist;
         }
-        public async Task<Schedule> ViewSchedule(int id) 
+        public async Task<Schedule> ViewSchedule(int id)
         {
             var schedules = await _scheduleRepo.GetAllAsync();
             if (!schedules.IsNullOrEmpty())
@@ -135,24 +137,24 @@ namespace Services.Implement
             }
         }
 
-        public async Task<List<ProfessionDetail>> ViewProfession(int id) 
+        public async Task<List<ProfessionDetail>> ViewProfession(int id)
         {
             var professions = await _professionRepo.GetAllAsync();
-            if (!professions.IsNullOrEmpty()) 
+            if (!professions.IsNullOrEmpty())
             {
                 var result = from p in professions
                              join d in await _dentistRepo.GetAllAsync() on p.DentistId equals d.DentistId
                              join t in await _treatmentRepo.GetAllAsync() on p.TreatmentId equals t.TreatmentId
                              where d.DentistId == id
                              select new ProfessionDetail
-                             { 
-                                ProfessionId = p.ProfessionId,
-                                DentistId = d.DentistId,
-                                DentistName = d.Name,
-                                DentistEmail = d.Email,
-                                TreatmentName = t.Name,
-                                TreatmentDescription = t.Description,
-                                TreatmentPrice = t.Price
+                             {
+                                 ProfessionId = p.ProfessionId,
+                                 DentistId = d.DentistId,
+                                 DentistName = d.Name,
+                                 DentistEmail = d.Email,
+                                 TreatmentName = t.Name,
+                                 TreatmentDescription = t.Description,
+                                 TreatmentPrice = t.Price
                              };
                 return result.ToList();
             }

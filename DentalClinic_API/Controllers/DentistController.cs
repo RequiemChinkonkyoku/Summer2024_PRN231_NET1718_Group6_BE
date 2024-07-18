@@ -57,21 +57,6 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        //[HttpGet("get-dentist-by-id/{id}")]
-        //public async Task<ActionResult<Dentist>> GetDentistById(int id)
-        //{
-        //    var dentist = await _dentistService.GetDentistByID(id);
-
-        //    if (dentist != null)
-        //    {
-        //        return Ok(dentist);
-        //    }
-        //    else
-        //    {
-        //        return NotFound();
-        //    }
-        //}
-
         [HttpGet("get-current-dentist")]
         [Authorize(Roles = "Dentist")]
         public async Task<IActionResult> GetCurrentDentist()
@@ -156,26 +141,6 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        //[HttpPost("add-dentist")]
-        //[Authorize(Roles = "Manager")]
-        //public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    var dentist = await _dentistService.DentistAdd(addDentistRequest);
-        //    if (dentist != null)
-        //    {
-        //        return Ok(dentist);
-        //    }
-        //    else
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
-
         [HttpPut("update-dentist/{id}")]
         [Authorize(Roles = "Manager, Admin, Dentist")]
         public async Task<IActionResult> UpdateDentist(int id, [FromBody] UpdateDentistRequest updateDentistRequest)
@@ -202,24 +167,6 @@ namespace DentalClinic_API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
-        //[HttpPut("update-dentist/{id}")]
-        //public async Task<IActionResult> UpdateDentist(int id, [FromBody] UpdateDentistRequest updateDentistRequest)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    var updatedDentist = await _dentistService.UpdateDentist(id, updateDentistRequest);
-
-        //    if (updatedDentist == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(updatedDentist);
-        //}
 
         [HttpPut("update-dentist-account/{id}")]
         public async Task<IActionResult> UpdateDentistAccount(int id, [FromBody] UpdateDentistAccountRequest updateDentistAccountRequest)
@@ -290,18 +237,6 @@ namespace DentalClinic_API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
-        //[HttpDelete("delete-dentist/{id}")]
-        //public async Task<IActionResult> DeleteDentist(int id)
-        //{
-        //    var deletedentist = await _dentistService.DeleteDentist(id);
-        //    if (deletedentist == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(deletedentist);
-        //}
 
         [HttpDelete("delete-dentist-account/{id}")]
         public async Task<IActionResult> DeleteDentistAccount(int id)
