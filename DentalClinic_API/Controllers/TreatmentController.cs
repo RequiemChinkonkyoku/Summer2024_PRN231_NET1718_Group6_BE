@@ -36,10 +36,10 @@ namespace DentalClinic_API.Controllers
         //    return Ok(patients);
         //}
 
-        [HttpGet("get-treatment-by-id/{id}")]
-        public async Task<ActionResult<Dentist>> GetTreatmentById(int id)
+        [HttpGet("get-treatment-by-id-odata/{id}")]
+        public async Task<ActionResult<Treatment>> GetTreatmentByIdOdata(int id)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync($"http://localhost:5298/odata/Treatments({id})");
+            HttpResponseMessage response = await _httpClient.GetAsync($"http://localhost:5298/odata/Treatments({id})?$expand=Professions");
             if (response.IsSuccessStatusCode)
             {
                 string json = await response.Content.ReadAsStringAsync();
@@ -52,20 +52,20 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        //[HttpGet("get-treatment-by-id/{id}")]
-        //public async Task<ActionResult<Dentist>> GetTreatmentById(int id)
-        //{
-        //    var treatment = await _treatmentService.GetTreatmentByID(id);
+        [HttpGet("get-treatment-by-id/{id}")]
+        public async Task<ActionResult<Dentist>> GetTreatmentById(int id)
+        {
+            var treatment = await _treatmentService.GetTreatmentByID(id);
 
-        //    if (treatment != null)
-        //    {
-        //        return Ok(treatment);
-        //    }
-        //    else
-        //    {
-        //        return NotFound();
-        //    }
-        //}
+            if (treatment != null)
+            {
+                return Ok(treatment);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
 
         [HttpPost("add-treatment")]
         [Authorize(Roles = "Manager")]

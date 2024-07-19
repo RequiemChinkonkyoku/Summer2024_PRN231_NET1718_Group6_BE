@@ -26,7 +26,6 @@ namespace DentalClinic_BE_OData.Controllers
         [EnableQuery]
         public async Task<ActionResult<Treatment>> Get(int key)
         {
-
             var treatment = await _treatmentService.GetTreatmentByID(key);
 
             if (treatment != null)

@@ -113,16 +113,18 @@ namespace Services.Implement
             await _dentistRepo.UpdateAsync(deletedentist);
             return deletedentist;
         }
-        public async Task<Schedule> ViewSchedule(int id) 
+
+        public async Task<List<Schedule>> ViewSchedule(int id)
         {
             var schedules = await _scheduleRepo.GetAllAsync();
+
             if (!schedules.IsNullOrEmpty())
             {
-                var schedule = schedules.FirstOrDefault(s => s.DentistId == id);
+                var dentistSchedule = schedules.Where(sch => sch.DentistId == id).ToList();
 
-                if (schedule != null)
+                if (dentistSchedule != null)
                 {
-                    return schedule;
+                    return dentistSchedule;
                 }
                 else
                 {
@@ -135,24 +137,24 @@ namespace Services.Implement
             }
         }
 
-        public async Task<List<ProfessionDetail>> ViewProfession(int id) 
+        public async Task<List<ProfessionDetail>> ViewProfession(int id)
         {
             var professions = await _professionRepo.GetAllAsync();
-            if (!professions.IsNullOrEmpty()) 
+            if (!professions.IsNullOrEmpty())
             {
                 var result = from p in professions
                              join d in await _dentistRepo.GetAllAsync() on p.DentistId equals d.DentistId
                              join t in await _treatmentRepo.GetAllAsync() on p.TreatmentId equals t.TreatmentId
                              where d.DentistId == id
                              select new ProfessionDetail
-                             { 
-                                ProfessionId = p.ProfessionId,
-                                DentistId = d.DentistId,
-                                DentistName = d.Name,
-                                DentistEmail = d.Email,
-                                TreatmentName = t.Name,
-                                TreatmentDescription = t.Description,
-                                TreatmentPrice = t.Price
+                             {
+                                 ProfessionId = p.ProfessionId,
+                                 DentistId = d.DentistId,
+                                 DentistName = d.Name,
+                                 DentistEmail = d.Email,
+                                 TreatmentName = t.Name,
+                                 TreatmentDescription = t.Description,
+                                 TreatmentPrice = t.Price
                              };
                 return result.ToList();
             }
