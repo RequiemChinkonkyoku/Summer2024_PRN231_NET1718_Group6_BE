@@ -266,5 +266,20 @@ namespace DentalClinic_API.Controllers
                 return NotFound();
             }
         }
+
+        [HttpPut("finish-appointment")]
+        public async Task<IActionResult> FinishAppointment(int appId)
+        {
+            var result = await _appService.FinishAppointment(appId);
+
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
     }
 }

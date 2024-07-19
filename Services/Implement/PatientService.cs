@@ -58,7 +58,7 @@ namespace Services.Implement
             var patient = new Patient()
             {
                 Name = addPatientRequest.Name,
-                Age = addPatientRequest.Age,
+                YearOfBirth = addPatientRequest.YearOfBirth,
                 Address = addPatientRequest.Address,
                 Gender = addPatientRequest.Gender,
                 CustomerId = customerId
@@ -81,7 +81,7 @@ namespace Services.Implement
                     throw new Exception("You do not have permission to update this patient");
                 }
                 updatepatient.Name = updatePatientRequest.Name;
-                updatepatient.Age = updatePatientRequest.Age;
+                updatepatient.YearOfBirth = updatePatientRequest.YearOfBirth;
                 updatepatient.Address = updatePatientRequest.Address;
                 updatepatient.Gender = updatePatientRequest.Gender;
                 updatepatient.CustomerId = customerId;
@@ -125,7 +125,7 @@ namespace Services.Implement
                 {
                     PatientId = patient.PatientId,
                     Name = patient.Name,
-                    Age = patient.Age,
+                    YearOfBirth = patient.YearOfBirth,
                     Gender = patient.Gender,
                     Status = patient.Status,
                     Address = patient.Address,

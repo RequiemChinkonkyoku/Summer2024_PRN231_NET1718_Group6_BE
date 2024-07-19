@@ -11,6 +11,8 @@ public partial class Customer
 
     public string? Password { get; set; }
 
+    public string? PasswordHash { get; set; }
+
     public int? Status { get; set; }
 
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();

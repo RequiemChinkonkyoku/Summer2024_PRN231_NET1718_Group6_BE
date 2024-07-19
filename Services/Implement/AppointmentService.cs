@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models;
 using Models.DTOs;
@@ -22,6 +24,7 @@ namespace Services.Implement
         private readonly IRepositoryBase<Schedule> _scheduleRepo;
         private readonly IRepositoryBase<Profession> _professionRepo;
         private readonly IRepositoryBase<Customer> _cusRepo;
+        private readonly IRepositoryBase<MedicalRecord> _medRecRepo;
 
         public AppointmentService(IRepositoryBase<Appointment> appointmentRepo,
                                   IRepositoryBase<AppointmentDetail> appDetailRepo,
@@ -30,7 +33,8 @@ namespace Services.Implement
                                   IRepositoryBase<Dentist> dentistRepo,
                                   IRepositoryBase<Profession> professionRepo,
                                   IRepositoryBase<Schedule> scheduleRepo,
-                                  IRepositoryBase<Customer> cusRepo)
+                                  IRepositoryBase<Customer> cusRepo,
+                                  IRepositoryBase<MedicalRecord> medRecRepo)
         {
             _appRepo = appointmentRepo;
             _appDetailRepo = appDetailRepo;
@@ -40,6 +44,7 @@ namespace Services.Implement
             _professionRepo = professionRepo;
             _scheduleRepo = scheduleRepo;
             _cusRepo = cusRepo;
+            _medRecRepo = medRecRepo;
         }
 
         public async Task<Appointment> CancelAppointment(int appID)
@@ -50,6 +55,19 @@ namespace Services.Implement
             {
                 appointment.Status = 0;
                 await _appRepo.UpdateAsync(appointment);
+                try
+                {
+                    var temp01 = await _appDetailRepo.GetAllAsync();
+                    var appDetails = temp01.FirstOrDefault(x => x.AppointmentId == appID);
+                    int? temp02 = appDetails.ScheduleId;
+                    Schedule s = await _scheduleRepo.FindByIdAsync((int)temp02);
+                    s.Status = 1;
+                    _scheduleRepo.Update(s);
+                }
+                catch (Exception ex)
+                {
+
+                }
                 return appointment;
             }
 
@@ -386,6 +404,29 @@ namespace Services.Implement
             }
 
             return new CreateAppointmentResponse { Success = true, Appointment = appointment };
+        }
+
+        public async Task<Appointment> FinishAppointment(int appId)
+        {
+            var records = await _medRecRepo.GetAllAsync();
+            var appointment = await _appRepo.FindByIdAsync(appId);
+
+            if (appointment == null || records == null)
+            {
+                return null;
+            }
+            else
+            {
+                appointment.Status = 2;
+                var medRecord = records.FirstOrDefault(x => x.AppointmentId == appId);
+                if (medRecord != null)
+                {
+                    medRecord.Status = 1;
+                    _medRecRepo.UpdateAsync(medRecord);
+                }
+                _appRepo.UpdateAsync(appointment);
+            }
+            return appointment;
         }
     }
 }

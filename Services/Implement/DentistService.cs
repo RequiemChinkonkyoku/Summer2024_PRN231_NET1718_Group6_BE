@@ -66,15 +66,17 @@ namespace Services.Implement
 
         public async Task<Dentist> DentistAdd(AddDentistRequest addDentistRequest)
         {
-            var dentist = new Dentist()
-            {
-                Name = addDentistRequest.Name,
-                Email = addDentistRequest.Email,
-                Password = addDentistRequest.Password,
-                Type = addDentistRequest.Type,
-                ContractType = addDentistRequest.ContractType,
-                Status = 1
-            };
+            var dentist = new Dentist();
+
+            dentist.Name = addDentistRequest.Name;
+            dentist.Email = addDentistRequest.Email;
+            dentist.Password = addDentistRequest.Password;
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(addDentistRequest.Password);
+            dentist.PasswordHash = passwordHash;
+            dentist.Type = addDentistRequest.Type;
+            dentist.ContractType = addDentistRequest.ContractType;
+            dentist.Status = 1;
+
             await _dentistRepo.AddAsync(dentist);
             return dentist;
         }

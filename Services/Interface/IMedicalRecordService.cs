@@ -18,6 +18,6 @@ namespace Services.Interface
 
         public Task<MedicalRecord> UpdateMedicalRecordAsync(int id, UpdateMedicalRecordRequest updateMedicalRecordRequest);
 
-
+        public Task<MedicalRecord> GetMedicalRecordByAppId(int id);
     }
 }

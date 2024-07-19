@@ -19,21 +19,36 @@ namespace DentalClinic_API.Controllers
         }
 
 
-        [HttpGet("get-all-medicalrecods")]
-        public async Task<ActionResult<List<Dentist>>> GetAllDentist()
+        [HttpGet("get-all-medical-records")]
+        public async Task<ActionResult<List<MedicalRecord>>> GetAllMedicalRecord()
         {
-            var dentists = await _medicalRecordService.GetAllMedicalRecordAsync();
-            return Ok(dentists);
+            var medicalRecords = await _medicalRecordService.GetAllMedicalRecordAsync();
+            return Ok(medicalRecords);
         }
 
         [HttpGet("get-medical-record/{id}")]
         public async Task<ActionResult<MedicalRecord>> ViewMedicalRecord(int id)
         {
-            var medicalrecord = await _medicalRecordService.ViewMedicalRecord(id);
+            var medicalRecord = await _medicalRecordService.ViewMedicalRecord(id);
 
-            if (medicalrecord != null)
+            if (medicalRecord != null)
             {
-                return Ok(medicalrecord);
+                return Ok(medicalRecord);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("get-medical-record-by-app-id/{id}")]
+        public async Task<ActionResult<MedicalRecord>> GetMedicalRecordByAppId(int id)
+        {
+            var medicalRecord = await _medicalRecordService.GetMedicalRecordByAppId(id);
+
+            if (medicalRecord != null)
+            {
+                return Ok(medicalRecord);
             }
             else
             {
