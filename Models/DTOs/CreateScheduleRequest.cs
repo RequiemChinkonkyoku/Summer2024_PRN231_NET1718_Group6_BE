@@ -15,7 +15,6 @@ namespace Models.DTOs
         public DateTime StartDate { get; set; }
 
         public int RepeatForWeeks { get; set; }
-
     }
 
     public class DayOfWeekTimeSlot
