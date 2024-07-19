@@ -9,6 +9,7 @@ using System.Security.Claims;
 
 namespace DentalClinic_API.Controllers
 {
+
     [ApiController]
     [Route("[controller]")]
     public class MedicalRecordController : Controller
@@ -16,6 +17,14 @@ namespace DentalClinic_API.Controllers
         private IMedicalRecordService _medicalRecordService;
         public MedicalRecordController(IMedicalRecordService medicalRecordService) {
             _medicalRecordService = medicalRecordService;
+        }
+
+
+        [HttpGet("get-all-medicalrecods")]
+        public async Task<ActionResult<List<Dentist>>> GetAllDentist()
+        {
+            var dentists = await _medicalRecordService.GetAllMedicalRecordAsync();
+            return Ok(dentists);
         }
 
         [HttpGet("get-medical-record/{id}")]
@@ -30,6 +39,44 @@ namespace DentalClinic_API.Controllers
             else
             {
                 return NotFound();
+            }
+        }
+
+        [HttpPost("create-medical-record")]
+        public async Task<IActionResult> AddMedicalRecord([FromBody] AddMedicalRecordRequest addMedicalRecordRequest, int appointmentID)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var medicalRecord = await _medicalRecordService.AddMedicalRecordAsync(addMedicalRecordRequest, appointmentID);
+                return CreatedAtAction(nameof(ViewMedicalRecord), new { id = medicalRecord.RecordId }, medicalRecord);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPut("update-medical-record/{id}")]
+        public async Task<IActionResult> UpdateMedicalRecord(int id, [FromBody] UpdateMedicalRecordRequest updateMedicalRecordRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var medicalRecord = await _medicalRecordService.UpdateMedicalRecordAsync(id ,updateMedicalRecordRequest);
+                return Ok(medicalRecord);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }
