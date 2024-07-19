@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;
 using Models;
+using Models.DTOs;
 using Repositories.Implement;
 using Repositories.Interface;
 using Services.Implement;
@@ -14,6 +15,7 @@ modelBuilder.EntitySet<Schedule>("Schedules");
 modelBuilder.EntitySet<MedicalRecord>("MedicalRecord");
 modelBuilder.EntitySet<ProfessionDetail>("ProfessionDetails");
 modelBuilder.EntitySet<Profession>("Professions");
+modelBuilder.EntitySet<UpdateDentistAccountRequest>("UpdateDentistAccount");
 var edmModel = modelBuilder.GetEdmModel();
 
 builder.Services.AddControllers().AddOData(options =>
