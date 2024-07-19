@@ -10,9 +10,12 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Services.Implement
 {
@@ -247,9 +250,16 @@ namespace Services.Implement
             customer.Password = password;
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
             customer.PasswordHash = passwordHash;
-            customer.Status = 1;
+            customer.Status = 0;
 
             _customerRepo.Add(customer);
+
+            string token = customer.CustomerId + customer.Email + customer.Password;
+            string _verificationToken = BCrypt.Net.BCrypt.HashString(token);
+
+            string verify = SendVerificationEmail(customer.Email, "Verification Email",
+                "http://localhost:3000/account-verification?token=" + _verificationToken);
+
             return customer;
         }
 
@@ -268,6 +278,65 @@ namespace Services.Implement
                         customer.PasswordHash = temp;
 
                         _customerRepo.UpdateAsync(customer);
+                        return customer;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private string SendVerificationEmail(string _to, string _subject, string _body)
+        {
+            IConfiguration config = new ConfigurationBuilder()
+         .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json", true, true)
+        .Build();
+            var _email = config["GmailSender:Email"];
+            var _password = config["GmailSender:Password"];
+
+            MailMessage message = new MailMessage(_email, _to, _subject, _body);
+
+            message.BodyEncoding = System.Text.Encoding.UTF8;
+            message.SubjectEncoding = System.Text.Encoding.UTF8;
+            message.IsBodyHtml = true;
+            message.ReplyToList.Add(new MailAddress(_email));
+            message.Sender = new MailAddress(_email);
+
+            using var smtpClient = new SmtpClient("smtp.gmail.com");
+            smtpClient.Port = 587;
+            smtpClient.EnableSsl = true;
+            smtpClient.Credentials = new NetworkCredential(_email, _password);
+
+            try
+            {
+                smtpClient.Send(message);
+                return "An verification email has been sent to your inbox.";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return "Email cannot be sent.";
+            }
+        }
+
+        public async Task<Customer> ValidateVerificationToken(string tokenToVerify)
+        {
+            var customerList = await _customerRepo.GetAllAsync();
+            
+            foreach (var customer in customerList)
+            {
+                string token = customer.CustomerId + customer.Email + customer.Password;
+                if (BCrypt.Net.BCrypt.Verify(token, tokenToVerify))
+                {
+                    if (customer.Status == 1)
+                    {
+                        return customer;
+                    }
+                    else
+                    {
+                        customer.Status = 1;
+                        _customerRepo.Update(customer);
                         return customer;
                     }
                 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models;
@@ -54,6 +55,19 @@ namespace Services.Implement
             {
                 appointment.Status = 0;
                 await _appRepo.UpdateAsync(appointment);
+                try
+                {
+                    var temp01 = await _appDetailRepo.GetAllAsync();
+                    var appDetails = temp01.FirstOrDefault(x => x.AppointmentId == appID);
+                    int? temp02 = appDetails.ScheduleId;
+                    Schedule s = await _scheduleRepo.FindByIdAsync((int)temp02);
+                    s.Status = 1;
+                    _scheduleRepo.Update(s);
+                }
+                catch (Exception ex)
+                {
+
+                }
                 return appointment;
             }
 

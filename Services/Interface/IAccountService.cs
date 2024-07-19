@@ -16,5 +16,6 @@ namespace Services.Interface
         Task<string> GetValueFromToken(string token, string claimType);
         Task<Customer> CustomerRegister(string email, string password);
         Task<Customer> CustomerChangePassword(int userId, string currentPassword, string newPassword);
+        Task<Customer> ValidateVerificationToken(string tokenToVerify);
     }
 }

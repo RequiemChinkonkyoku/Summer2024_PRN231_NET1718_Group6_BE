@@ -153,5 +153,20 @@ namespace DentalClinic_API.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPost("verify-token")]
+        public async Task<IActionResult> VerifyToken(string token)
+        {
+            var response = await _accountService.ValidateVerificationToken(token);
+
+            if (response != null)
+            {
+                return Ok(new { success = true });
+            }
+            else
+            {
+                return BadRequest(new { success = false });
+            }
+        }
     }
 }
