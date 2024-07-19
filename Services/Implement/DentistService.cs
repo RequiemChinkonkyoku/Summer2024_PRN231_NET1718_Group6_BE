@@ -115,16 +115,18 @@ namespace Services.Implement
             await _dentistRepo.UpdateAsync(deletedentist);
             return deletedentist;
         }
-        public async Task<Schedule> ViewSchedule(int id)
+
+        public async Task<List<Schedule>> ViewSchedule(int id)
         {
             var schedules = await _scheduleRepo.GetAllAsync();
+
             if (!schedules.IsNullOrEmpty())
             {
-                var schedule = schedules.FirstOrDefault(s => s.DentistId == id);
+                var dentistSchedule = schedules.Where(sch => sch.DentistId == id).ToList();
 
-                if (schedule != null)
+                if (dentistSchedule != null)
                 {
-                    return schedule;
+                    return dentistSchedule;
                 }
                 else
                 {

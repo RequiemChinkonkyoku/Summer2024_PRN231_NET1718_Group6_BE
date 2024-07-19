@@ -33,15 +33,6 @@ namespace DentalClinic_API.Controllers
             return Ok(allPatients);
         }
 
-        //[HttpGet("get-all-patients")]
-        //public async Task<ActionResult<List<Patient>>> GetAllPatients()
-        //{
-        //    var patients = await _patientService.GetAllPatient();
-        //    return Ok(patients);
-        //}
-
-
-
         [HttpGet("get-patient-by-id/{id}")]
         public async Task<ActionResult<Patient>> GetPatientById(int id)
         {

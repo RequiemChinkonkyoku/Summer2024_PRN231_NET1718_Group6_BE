@@ -72,13 +72,14 @@ namespace Services.Implement
 
             for (var date = request.StartDate; date <= endDate; date = date.AddDays(1))
             {
-                var dayOfWeekTimeSlot = request.DayOfWeekTimeSlots.FirstOrDefault(d => d.DayOfWeek == date.DayOfWeek);
-                if (dayOfWeekTimeSlot != null)
+                var dayOfWeekTimeSlot = request.DayOfWeekTimeSlots.Where(d => d.DayOfWeek == date.DayOfWeek).ToList();
+
+                foreach (var timeSlot in dayOfWeekTimeSlot)
                 {
                     var schedule = new Schedule
                     {
                         WorkDate = date,
-                        TimeSlot = dayOfWeekTimeSlot.TimeSlot,
+                        TimeSlot = timeSlot.TimeSlot,
                         Status = 1,
                         DentistId = request.DentistId
                     };
