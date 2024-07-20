@@ -14,10 +14,16 @@ namespace Services.Implement
     public class TreatmentService : ITreatmentService
     {
         private IRepositoryBase<Treatment> _treatmentRepo;
+        private IRepositoryBase<Profession> _professionRepo;
+        private IRepositoryBase<Dentist> _dentistRepo;
 
-        public TreatmentService(IRepositoryBase<Treatment> treatmentRepository)
+        public TreatmentService(IRepositoryBase<Treatment> treatmentRepository,
+                                IRepositoryBase<Profession> professionRepo,
+                                IRepositoryBase<Dentist> dentistRepo)
         {
             _treatmentRepo = treatmentRepository;
+            _professionRepo = professionRepo;
+            _dentistRepo = dentistRepo;
         }
 
         public async Task<List<Treatment>> GetAllTreatment()
@@ -35,6 +41,17 @@ namespace Services.Implement
 
                 if (treatment != null)
                 {
+                    var profList = await _professionRepo.GetAllAsync();
+
+                    var treatProfList = profList.Where(p => p.TreatmentId == id).ToList();
+
+                    foreach (var prof in treatProfList)
+                    {
+                        prof.Dentist = await _dentistRepo.FindByIdAsync(prof.DentistId.Value);
+                    }
+
+                    treatment.Professions = treatProfList;
+
                     return treatment;
                 }
                 else

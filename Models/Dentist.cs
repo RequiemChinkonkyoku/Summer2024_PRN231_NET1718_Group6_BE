@@ -13,6 +13,8 @@ public partial class Dentist
 
     public string? Password { get; set; }
 
+    public string? PasswordHash { get; set; }
+
     public int? Type { get; set; }
 
     public string? ContractType { get; set; }

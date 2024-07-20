@@ -19,5 +19,6 @@ namespace Services.Interface
         Task<UpdateAppointmentResponse> UpdateAppointment(UpdateAppointmentRequest request);
         Task<Appointment> GetAppointmentById(int id);
         Task<CreateAppointmentResponse> UpdateAppointmentStatus(int id);
+        Task<Appointment> FinishAppointment(int appId);
     }
 }

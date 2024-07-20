@@ -108,7 +108,7 @@ namespace DentalClinic_API.Controllers
         }
 
         [HttpGet("get-schedules-for-app")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer, Manager")]
         public async Task<IActionResult> GetSchedulesForApp(int treatmentId)
         {
             int userId = 0;

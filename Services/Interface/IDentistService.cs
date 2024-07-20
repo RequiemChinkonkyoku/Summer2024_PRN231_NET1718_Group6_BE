@@ -15,7 +15,7 @@ namespace Services.Interface
         Task<Dentist> DentistAdd(AddDentistRequest addDentistRequest);
         Task<Dentist> UpdateDentist(int id,UpdateDentistRequest updateDentistRequest);
         Task<Dentist> DeleteDentist(int id);
-        Task<Schedule> ViewSchedule(int id);
+        Task<List<Schedule>> ViewSchedule(int id);
         Task<List<ProfessionDetail>> ViewProfession(int id);
         Task<Dentist> UpdateDentistAccount(int id, UpdateDentistAccountRequest updateDentistAccountRequest);
         Task<Dentist> DeleteDentistAccount(int id);
