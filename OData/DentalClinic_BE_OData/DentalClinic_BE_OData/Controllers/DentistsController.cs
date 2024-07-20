@@ -82,41 +82,17 @@ namespace DentalClinic_BE_OData.Controllers
             return Ok(updatedDentist);
         }
 
-        
-
-        //[EnableQuery]
-        //[HttpPatch("{key}")]
-        //public async Task<IActionResult> Patch(int key, [FromBody] UpdateDentistAccountRequest updateDentistAccountRequest) 
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    var updateDentistAccount = await _dentistService.UpdateDentistAccount(key, updateDentistAccountRequest);
-        //    if (updateDentistAccount == null) 
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(updateDentistAccount);
-        //}
-
         [EnableQuery]
-        [HttpPatch("delete-dentist-account")]
-        public async Task<IActionResult> DeleteDentistAccount([FromODataUri] int key)
+        public async Task<IActionResult> Delete(int key)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var deleteDentistAccount = await _dentistService.DeleteDentistAccount(key);
-            if (deleteDentistAccount == null) 
+            var deletedentist = await _dentistService.DeleteDentist(key);
+            if (deletedentist == null)
             {
                 return NotFound();
             }
-            return Ok(deleteDentistAccount);
-        }
 
+            return Ok(deletedentist);
+        }
     }
 }
 
