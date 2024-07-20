@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models;
 
 public partial class Schedule
 {
+    [Key]
     public int ScheduleId { get; set; }
 
     public DateTime WorkDate { get; set; }

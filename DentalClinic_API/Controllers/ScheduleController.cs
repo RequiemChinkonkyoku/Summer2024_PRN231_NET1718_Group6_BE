@@ -5,6 +5,9 @@ using Models.DTOs;
 using Services.Implement;
 using Services.Interface;
 using System.Security.Claims;
+using Newtonsoft.Json;
+using System.Net.Http;
+
 
 namespace DentalClinic_API.Controllers
 {
@@ -13,17 +16,29 @@ namespace DentalClinic_API.Controllers
 
     public class ScheduleController : Controller
     {
-        private readonly IScheduleService _scheduleService;
+        private IScheduleService _scheduleService;
+        private HttpClient _httpClient;
 
         public ScheduleController(IScheduleService scheduleService)
         {
             _scheduleService = scheduleService;
+            _httpClient = new HttpClient();
         }
 
         [HttpGet("get-all-schedule")]
+        [Authorize(Roles = "Manager, Admin")]
         public async Task<ActionResult<List<Schedule>>> GetAllSchedules()
         {
             return await _scheduleService.GetAllSchedules();
+        }
+
+        [HttpGet("get-all-schedule-odata")]
+        public async Task<IActionResult> GetAllSchedulesOData()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync("http://localhost:44380/odata/Schedules");
+            string json = await response.Content.ReadAsStringAsync();
+            dynamic schedules = JsonConvert.DeserializeObject<OdataResponse<IEnumerable<Schedule>>>(json);
+            return Ok(schedules);
         }
 
         [HttpGet("get-clinic-schedule")]
