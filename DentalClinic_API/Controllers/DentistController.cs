@@ -275,5 +275,21 @@ namespace DentalClinic_API.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpGet("get-den-with-treat/{id}")]
+        [Authorize(Roles = ("Manager"))]
+        public async Task<IActionResult> GetDentistWithTreatment(int id)
+        {
+            var denList = await _dentistService.GetDentistWithTreatment(id);
+
+            if (denList != null)
+            {
+                return Ok(denList);
+            }
+            else
+            {
+                return BadRequest("Error getting dentist with treatment");
+            }
+        }
     }
 }

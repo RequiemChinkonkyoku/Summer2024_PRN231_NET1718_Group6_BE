@@ -269,5 +269,38 @@ namespace Services.Implement
 
             return null;
         }
+
+        public async Task<List<Dentist>> GetDentistWithTreatment(int treatmentId)
+        {
+            var result = new List<Dentist>();
+
+            var profList = await _professionRepo.GetAllAsync();
+
+            var dentistTreatment = profList.Where(p => p.TreatmentId == treatmentId);
+
+            if (!dentistTreatment.IsNullOrEmpty())
+            {
+                foreach (var profession in dentistTreatment)
+                {
+                    var dentist = await _dentistRepo.FindByIdAsync(profession.DentistId.Value);
+
+                    if (dentist != null)
+                    {
+                        result.Add(dentist);
+                    }
+                }
+
+                if (!result.IsNullOrEmpty())
+                {
+                    return result;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            return null;
+        }
     }
 }

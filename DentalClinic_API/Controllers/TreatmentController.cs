@@ -85,7 +85,7 @@ namespace DentalClinic_API.Controllers
                 }
                 else
                 {
-                    return StatusCode((int)response.StatusCode, $"Failed to add dentist: {response.ReasonPhrase}");
+                    return StatusCode((int)response.StatusCode, $"Failed to add treatment: {response.ReasonPhrase}");
                 }
             }
             catch (Exception ex)
