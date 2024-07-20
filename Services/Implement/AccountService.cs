@@ -75,9 +75,12 @@ namespace Services.Implement
                 var customer = customers.FirstOrDefault(x => x.Email.Equals(email));
                 if (customer != null)
                 {
-                    if (BCrypt.Net.BCrypt.Verify(password, customer.PasswordHash))
+                    if (customer.Status == 1)
                     {
-                        return customer;
+                        if (BCrypt.Net.BCrypt.Verify(password, customer.PasswordHash))
+                        {
+                            return customer;
+                        }
                     }
                 }
             }
@@ -129,9 +132,12 @@ namespace Services.Implement
                 var dentist = dentists.FirstOrDefault(x => x.Email.Equals(email));
                 if (dentist != null)
                 {
-                    if (BCrypt.Net.BCrypt.Verify(password, dentist.PasswordHash))
+                    if (dentist.Status == 1)
                     {
-                        return dentist;
+                        if (BCrypt.Net.BCrypt.Verify(password, dentist.PasswordHash))
+                        {
+                            return dentist;
+                        }
                     }
                 }
             }
@@ -286,6 +292,29 @@ namespace Services.Implement
             return null;
         }
 
+        public async Task<Dentist> DentistChangePassword(int userId, string currentPassword, string newPassword)
+        {
+            var dentists = await _dentistRepo.GetAllAsync();
+            if (!dentists.IsNullOrEmpty())
+            {
+                var dentist = dentists.FirstOrDefault(x => x.DentistId.Equals(userId));
+                if (dentist != null)
+                {
+                    if (BCrypt.Net.BCrypt.Verify(currentPassword, dentist.PasswordHash))
+                    {
+                        dentist.Password = newPassword;
+                        string temp = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                        dentist.PasswordHash = temp;
+
+                        _dentistRepo.UpdateAsync(dentist);
+                        return dentist;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         private string SendVerificationEmail(string _to, string _subject, string _body)
         {
             IConfiguration config = new ConfigurationBuilder()
@@ -323,7 +352,7 @@ namespace Services.Implement
         public async Task<Customer> ValidateVerificationToken(string tokenToVerify)
         {
             var customerList = await _customerRepo.GetAllAsync();
-            
+
             foreach (var customer in customerList)
             {
                 string token = customer.CustomerId + customer.Email + customer.Password;

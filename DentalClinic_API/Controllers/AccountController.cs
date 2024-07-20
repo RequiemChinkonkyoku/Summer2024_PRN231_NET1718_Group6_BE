@@ -154,6 +154,33 @@ namespace DentalClinic_API.Controllers
             }
         }
 
+        [HttpPut("dentist-change-password")]
+        [Authorize(Roles = "Dentist")]
+        public async Task<IActionResult> DentistChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            int userId = 0;
+
+            try
+            {
+                userId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            var response = await _accountService.DentistChangePassword(userId, request.CurrentPassword, request.NewPassword);
+
+            if (response != null)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpPost("verify-token")]
         public async Task<IActionResult> VerifyToken(string token)
         {

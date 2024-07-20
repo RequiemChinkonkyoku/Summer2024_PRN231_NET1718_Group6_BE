@@ -17,5 +17,6 @@ namespace Services.Interface
         Task<Customer> CustomerRegister(string email, string password);
         Task<Customer> CustomerChangePassword(int userId, string currentPassword, string newPassword);
         Task<Customer> ValidateVerificationToken(string tokenToVerify);
+        Task<Dentist> DentistChangePassword(int userId, string currentPassword, string newPassword);
     }
 }
