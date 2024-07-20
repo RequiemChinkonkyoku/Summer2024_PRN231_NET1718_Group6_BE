@@ -20,5 +20,6 @@ namespace Services.Interface
         Task<Dentist> UpdateDentistAccount(int id, UpdateDentistAccountRequest updateDentistAccountRequest);
         Task<Dentist> DeleteDentistAccount(int id);
         Task<List<GetDentistsForAppResponse>> GetDentistsForApp(GetDentistsForAppRequest request);
+        Task<List<Dentist>> GetDentistWithTreatment(int treatmentId);
     }
 }
