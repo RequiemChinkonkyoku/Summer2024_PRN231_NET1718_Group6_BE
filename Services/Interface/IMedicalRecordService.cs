@@ -9,6 +9,7 @@ using Models;
 
 namespace Services.Interface
 {
+    public interface IMedicalRecordService
     {
         public Task<MedicalRecord> ViewMedicalRecord(int id);
 
