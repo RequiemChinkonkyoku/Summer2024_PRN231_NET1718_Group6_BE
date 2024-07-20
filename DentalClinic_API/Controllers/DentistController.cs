@@ -99,21 +99,6 @@ namespace DentalClinic_API.Controllers
             }
         }
 
-        [HttpGet("view-dentist-profession/{id}")]
-        public async Task<ActionResult<ProfessionDetail>> ViewProfession(int id)
-        {
-            var profession = await _dentistService.ViewProfession(id);
-
-            if (profession != null)
-            {
-                return Ok(profession);
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
-
         [HttpPost("add-dentist")]
         [Authorize(Roles = "Manager, Admin")]
         public async Task<ActionResult<Dentist>> AddDentist([FromBody] AddDentistRequest addDentistRequest)
