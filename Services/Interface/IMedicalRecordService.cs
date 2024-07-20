@@ -5,11 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Models;
 
 namespace Services.Interface
 {
-    public interface IMedicalRecordService
+    public interface  IMedicalRecordService
     {
         public Task<MedicalRecord> ViewMedicalRecord(int id);
 

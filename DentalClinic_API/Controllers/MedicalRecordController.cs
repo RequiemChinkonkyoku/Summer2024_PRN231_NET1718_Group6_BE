@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Models;
 using Models.DTOs;
 using Services.Implement;
 using Services.Interface;
-using System.Security.Claims;
 
 namespace DentalClinic_API.Controllers
 {
@@ -14,8 +12,9 @@ namespace DentalClinic_API.Controllers
     [Route("[controller]")]
     public class MedicalRecordController : Controller
     {
-        private IMedicalRecordService _medicalRecordService;
-        public MedicalRecordController(IMedicalRecordService medicalRecordService) {
+        private readonly IMedicalRecordService _medicalRecordService;
+        public MedicalRecordController(IMedicalRecordService medicalRecordService)
+        {
             _medicalRecordService = medicalRecordService;
         }
 
