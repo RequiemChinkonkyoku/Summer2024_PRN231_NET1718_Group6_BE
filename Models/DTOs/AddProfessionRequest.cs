@@ -9,7 +9,6 @@ namespace Models.DTOs
     public class AddProfessionRequest
     {
         public int TreatmentId { get; set; }
-
-        public List<int> DentistIds { get; set; }
+        public int DentistId { get; set; }
     }
 }
