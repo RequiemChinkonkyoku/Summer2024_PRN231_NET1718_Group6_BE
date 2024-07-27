@@ -56,34 +56,36 @@ namespace Services.Implement
                 return new AddProfessionResponse { Success = false, ErrorMessage = "Treatment does not exist" };
             }
 
-            var dentistList = request.DentistIds;
-
-            if (dentistList.IsNullOrEmpty())
+            if (request.DentistId == null)
             {
                 return new AddProfessionResponse { Success = false, ErrorMessage = "There are no dentistId given" };
             }
 
-            foreach (var dentistId in dentistList)
+            var dentist = await _dentistRepo.FindByIdAsync(request.DentistId);
+
+            if (dentist == null)
             {
-                var dentist = await _dentistRepo.FindByIdAsync(dentistId);
+                return new AddProfessionResponse { Success = false, ErrorMessage = "There are no dentist with id " + request.DentistId };
+            }
 
-                if (dentist == null)
-                {
-                    return new AddProfessionResponse { Success = false, ErrorMessage = "There are no dentist with id " + dentistId };
-                }
+            var profList = await _profRepo.GetAllAsync();
+            var existingProf = profList.FirstOrDefault(p => p.TreatmentId == request.TreatmentId && p.DentistId == request.DentistId);
 
-                var profession = new Profession { TreatmentId = request.TreatmentId, DentistId = dentistId };
-
+            if (existingProf == null)
+            {
                 try
                 {
+                    var profession = new Profession { TreatmentId = request.TreatmentId, DentistId = request.DentistId };
+
                     await _profRepo.AddAsync(profession);
+
+                    response.Add(profession);
                 }
                 catch (Exception error)
                 {
                     return new AddProfessionResponse { Success = false, ErrorMessage = "There has been an error " + error.Message };
                 }
 
-                response.Add(profession); ;
             }
 
             return new AddProfessionResponse { Success = true, Professions = response };

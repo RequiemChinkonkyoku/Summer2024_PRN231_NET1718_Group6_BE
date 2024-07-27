@@ -67,6 +67,8 @@ namespace Services.Implement
                 return new CreateScheduleResponse { Success = false, ErrorMessage = "Must be repeated for at least 1 week" };
             }
 
+            var scheduleList = await _scheduleRepo.GetAllAsync();
+            var dentistSchedule = scheduleList.Where(s => s.DentistId == request.DentistId);
             var schedules = new List<Schedule>();
             var endDate = request.StartDate.AddDays(request.RepeatForWeeks * 7);
 
@@ -76,23 +78,31 @@ namespace Services.Implement
 
                 foreach (var timeSlot in dayOfWeekTimeSlot)
                 {
-                    var schedule = new Schedule
-                    {
-                        WorkDate = date,
-                        TimeSlot = timeSlot.TimeSlot,
-                        Status = 1,
-                        DentistId = request.DentistId
-                    };
+                    var existingSchedule = dentistSchedule.FirstOrDefault(s => s.WorkDate == date.Date && s.TimeSlot == timeSlot.TimeSlot);
 
-                    schedules.Add(schedule);
+                    if (existingSchedule == null)
+                    {
+                        var schedule = new Schedule
+                        {
+                            WorkDate = date,
+                            TimeSlot = timeSlot.TimeSlot,
+                            Status = 1,
+                            DentistId = request.DentistId
+                        };
+
+                        schedules.Add(schedule);
+                    }
                 }
             }
 
             try
             {
-                foreach (var schedule in schedules)
+                if (schedules.Count > 0)
                 {
-                    await _scheduleRepo.AddAsync(schedule);
+                    foreach (var schedule in schedules)
+                    {
+                        await _scheduleRepo.AddAsync(schedule);
+                    }
                 }
 
                 return new CreateScheduleResponse { Success = true, Schedules = schedules };
@@ -140,8 +150,8 @@ namespace Services.Implement
                         dentList.Add(dentist);
                     }
                 }
-                if (dentList.Any()) 
-                { 
+                if (dentList.Any())
+                {
                     var allSchedules = await _scheduleRepo.GetAllAsync();
                     var filteredSchedules = allSchedules.Where(s => s.WorkDate > DateTime.Now
                                                                && s.Status == 1);
